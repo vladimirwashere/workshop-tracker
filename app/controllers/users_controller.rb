@@ -42,10 +42,7 @@ class UsersController < ApplicationController
   def update
     authorize @user
     update_params = user_params.except(:password, :password_confirmation)
-
-    if update_params[:role].present? && @user == Current.user
-      update_params = update_params.except(:role)
-    end
+    update_params = update_params.except(:role) if @user == Current.user
 
     if @user.update(update_params)
       @user.sessions.destroy_all if @user.saved_change_to_role?
@@ -99,6 +96,8 @@ class UsersController < ApplicationController
   end
 
   def user_params
-    params.require(:user).permit(:display_name, :email_address, :password, :password_confirmation, :role)
+    permitted = params.require(:user).permit(:display_name, :email_address, :password, :password_confirmation)
+    permitted[:role] = params.dig(:user, :role) if params.dig(:user, :role).present?
+    permitted
   end
 end
