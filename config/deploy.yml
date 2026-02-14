@@ -1,0 +1,71 @@
+service: bah-workshop-tracker
+
+# Docker image name — update to your registry
+image: your-registry/bah-workshop-tracker
+
+servers:
+  web:
+    hosts:
+      - YOUR_SERVER_IP
+    labels:
+      traefik.http.routers.app.rule: Host(`YOUR_DOMAIN`)
+
+  worker:
+    hosts:
+      - YOUR_SERVER_IP
+    cmd: bundle exec rake solid_queue:start
+
+proxy:
+  ssl: true
+  host: YOUR_DOMAIN
+
+registry:
+  server: ghcr.io
+  username: YOUR_GITHUB_USERNAME
+  password:
+    - KAMAL_REGISTRY_PASSWORD
+
+env:
+  secret:
+    - SECRET_KEY_BASE
+    - DATABASE_PASSWORD
+    - AR_ENCRYPTION_PRIMARY_KEY
+    - AR_ENCRYPTION_DETERMINISTIC_KEY
+    - AR_ENCRYPTION_KEY_DERIVATION_SALT
+    - SENDGRID_API_KEY
+    - EXCHANGERATE_API_KEY
+    - HONEYBADGER_API_KEY
+  clear:
+    RAILS_ENV: production
+    DATABASE_HOST: bah-workshop-tracker-db
+    DATABASE_USERNAME: postgres
+    APP_HOST: YOUR_DOMAIN
+    MAILER_DOMAIN: YOUR_DOMAIN
+
+accessories:
+  db:
+    image: postgres:16
+    host: YOUR_SERVER_IP
+    port: "127.0.0.1:5432:5432"
+    env:
+      secret:
+        - DATABASE_PASSWORD
+      clear:
+        POSTGRES_DB: bah_workshop_production
+        POSTGRES_USER: postgres
+    directories:
+      - data:/var/lib/postgresql/data
+
+volumes:
+  - "app_storage:/rails/storage"
+
+asset_path: /rails/public/assets
+
+builder:
+  arch: amd64
+
+aliases:
+  console: app exec --interactive --reuse "bin/rails console"
+  shell: app exec --interactive --reuse "bash"
+  logs: app logs -f
+  dbc: app exec --interactive --reuse "bin/rails dbconsole --include-password"

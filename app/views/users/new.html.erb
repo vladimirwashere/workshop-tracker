@@ -1,0 +1,12 @@
+<% content_for(:title) { t("users.new_title") } %>
+
+<div class="max-w-2xl mx-auto">
+  <div class="mb-6">
+    <%= render "shared/back_link", fallback: users_path %>
+    <h1 class="page-title mt-2"><%= t("users.new_title") %></h1>
+  </div>
+
+  <div class="glass-card p-6">
+    <%= render "form", user: @user, url: users_path, method: :post %>
+  </div>
+</div>

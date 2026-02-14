@@ -1,0 +1,21 @@
+<% content_for(:title, t("passwords.change_password")) %>
+
+<h2 class="text-xl font-semibold text-slate-900 mb-6"><%= t("passwords.change_password") %></h2>
+
+<%= form_with url: password_path(params[:token]), method: :patch, scope: :user, class: "space-y-4" do |f| %>
+  <div>
+    <%= f.label :password, t("passwords.new_password"), class: "label-premium mb-1" %>
+    <%= f.password_field :password, required: true, autofocus: true, autocomplete: "new-password",
+      class: "input-premium" %>
+  </div>
+
+  <div>
+    <%= f.label :password_confirmation, t("passwords.confirm_password"), class: "label-premium mb-1" %>
+    <%= f.password_field :password_confirmation, required: true, autocomplete: "new-password",
+      class: "input-premium" %>
+  </div>
+
+  <div>
+    <%= f.submit t("passwords.change_password"), class: "w-full btn-primary justify-center" %>
+  </div>
+<% end %>

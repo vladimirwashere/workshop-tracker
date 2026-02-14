@@ -1,0 +1,52 @@
+<%= form_with model: user, url: url, method: method, class: "space-y-5" do |f| %>
+  <%= render "shared/form_errors", record: user %>
+
+  <div>
+    <%= f.label :display_name, t("users.display_name"), class: "label-premium mb-1" %>
+    <%= f.text_field :display_name, required: true,
+      class: "input-premium",
+      autocomplete: "name",
+      aria: { required: true } %>
+  </div>
+
+  <div>
+    <%= f.label :email_address, t("users.email"), class: "label-premium mb-1" %>
+    <%= f.email_field :email_address, required: true,
+      class: "input-premium",
+      autocomplete: "email",
+      aria: { required: true } %>
+  </div>
+
+  <% if user.new_record? %>
+    <div>
+      <%= f.label :password, t("users.password"), class: "label-premium mb-1" %>
+      <%= f.password_field :password, required: true,
+        class: "input-premium",
+        autocomplete: "new-password",
+        aria: { required: true } %>
+    </div>
+
+    <div>
+      <%= f.label :password_confirmation, t("users.password_confirmation"), class: "label-premium mb-1" %>
+      <%= f.password_field :password_confirmation, required: true,
+        class: "input-premium",
+        autocomplete: "new-password",
+        aria: { required: true } %>
+    </div>
+  <% end %>
+
+  <div>
+    <%= f.label :role, t("users.role"), class: "label-premium mb-1" %>
+    <%= f.select :role,
+      User.roles.keys.map { |r| [t("common.roles.#{r}"), r] },
+      { prompt: "— #{t('users.role')} —" },
+      class: "select-premium w-full",
+      required: true,
+      aria: { required: true } %>
+  </div>
+
+  <div class="flex items-center gap-3 pt-2">
+    <%= f.submit t("common.save"), class: "btn-primary" %>
+    <%= link_to t("common.cancel"), users_path, class: "btn-secondary" %>
+  </div>
+<% end %>

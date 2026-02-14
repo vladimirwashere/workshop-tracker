@@ -1,0 +1,41 @@
+<% content_for(:title) { t("configs.title") } %>
+
+<div class="max-w-4xl mx-auto">
+  <h1 class="page-title mb-6"><%= t("configs.title") %></h1>
+
+  <div class="glass-card-flush">
+    <% if @configs.any? %>
+      <div class="overflow-x-auto">
+        <table class="table-premium" role="table" aria-label="<%= t('configs.title') %>">
+          <thead>
+            <tr>
+              <th><%= t("configs.key") %></th>
+              <th><%= t("configs.value") %></th>
+              <th class="text-right"><%= t("common.actions") %></th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @configs.each do |config| %>
+              <tr>
+                <td class="font-medium">
+                  <code class="bg-slate-100/80 px-2 py-1 rounded-lg text-xs"><%= config.key %></code>
+                </td>
+                <td class="text-slate-700 max-w-md break-words"><%= config.value %></td>
+                <td class="text-right">
+                  <% if policy(config).update? %>
+                    <%= link_to t("common.edit"), edit_config_path(config),
+                      class: "link-primary text-sm" %>
+                  <% end %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    <% else %>
+      <div class="p-6">
+        <p class="text-sm text-slate-500"><%= t("configs.no_configs") %></p>
+      </div>
+    <% end %>
+  </div>
+</div>

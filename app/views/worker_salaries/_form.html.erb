@@ -1,0 +1,26 @@
+<%= form_with(model: [@worker, worker_salary], class: "space-y-6") do |f| %>
+  <%= render "shared/form_errors", record: worker_salary %>
+
+  <div>
+    <%= f.label :gross_monthly_ron, t("worker_salaries.gross_monthly"), class: "label-premium" %>
+    <%= f.number_field :gross_monthly_ron,
+      step: 0.01,
+      min: 0,
+      class: "mt-1 input-premium",
+      required: true,
+      aria: { label: t("worker_salaries.gross_monthly") } %>
+  </div>
+
+  <div>
+    <%= f.label :effective_from, t("worker_salaries.effective_from"), class: "label-premium" %>
+    <%= f.date_field :effective_from,
+      class: "mt-1 input-premium",
+      required: true,
+      aria: { label: t("worker_salaries.effective_from") } %>
+  </div>
+
+  <div class="flex items-center gap-3 pt-2">
+    <%= f.submit t("common.save"), class: "btn-primary" %>
+    <%= link_to t("common.cancel"), worker_worker_salaries_path(@worker), class: "btn-secondary" %>
+  </div>
+<% end %>

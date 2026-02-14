@@ -1,0 +1,30 @@
+<% content_for(:title, @worker.full_name) %>
+
+<div class="space-y-4">
+  <div class="flex items-center justify-between">
+    <div>
+      <%= render "shared/back_link", fallback: worker_path(@worker) %>
+      <h1 class="page-title mt-1"><%= @worker.full_name %></h1>
+      <p class="text-sm text-slate-500"><%= @worker.trade %></p>
+    </div>
+  </div>
+
+  <div class="glass-card overflow-x-auto"
+       data-controller="worker-timeline"
+       data-worker-timeline-data-url-value="<%= worker_timeline_path(worker_id: @worker.id, format: :json) %>"
+       data-worker-timeline-show-costs-value="<%= can_view_costs? %>">
+    <div data-worker-timeline-target="chart">
+      <div class="flex items-center justify-center py-12">
+        <p class="text-slate-400 text-sm"><%= t("common.loading") %></p>
+      </div>
+    </div>
+    <div data-worker-timeline-target="tooltip"
+         class="fixed z-50 bg-white/90 backdrop-blur-sm shadow-lg rounded-xl p-3 border border-slate-200/50 max-w-xs pointer-events-none"
+         style="display:none">
+    </div>
+  </div>
+
+  <div class="flex flex-wrap gap-3 text-xs text-slate-500">
+    <span><%= t("workers.timeline_legend") %></span>
+  </div>
+</div>

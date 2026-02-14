@@ -1,0 +1,48 @@
+<% content_for(:title) { t("attachments.title") } %>
+
+<div class="max-w-3xl mx-auto">
+  <div class="mb-6">
+    <%= render "shared/back_link", fallback: root_path %>
+    <div class="flex items-center justify-between mt-2">
+      <h1 class="page-title"><%= @attachment.file_name %></h1>
+      <div class="flex items-center gap-2">
+        <% if policy(@attachment).download? %>
+          <%= link_to t("attachments.download"), download_attachment_path(@attachment),
+            class: "btn-primary" %>
+        <% end %>
+        <% if policy(@attachment).destroy? %>
+          <%= button_to t("common.delete"), attachment_path(@attachment),
+            method: :delete,
+            form: { data: { turbo_confirm: t("common.confirm_delete") } },
+            class: "btn-danger",
+            aria: { label: "#{t('common.delete')} #{@attachment.file_name}" } %>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <div class="glass-card-flush">
+    <dl class="divide-y divide-slate-100">
+      <div class="px-6 py-4 grid grid-cols-3 gap-4">
+        <dt class="text-sm font-medium text-slate-500"><%= t("attachments.file_name") %></dt>
+        <dd class="text-sm text-slate-900 col-span-2"><%= @attachment.file_name %></dd>
+      </div>
+      <div class="px-6 py-4 grid grid-cols-3 gap-4">
+        <dt class="text-sm font-medium text-slate-500"><%= t("attachments.file_size") %></dt>
+        <dd class="text-sm text-slate-900 col-span-2"><%= number_to_human_size(@attachment.file_size) if @attachment.file_size %></dd>
+      </div>
+      <div class="px-6 py-4 grid grid-cols-3 gap-4">
+        <dt class="text-sm font-medium text-slate-500"><%= t("attachments.mime_type") %></dt>
+        <dd class="text-sm text-slate-900 col-span-2"><%= @attachment.mime_type %></dd>
+      </div>
+      <div class="px-6 py-4 grid grid-cols-3 gap-4">
+        <dt class="text-sm font-medium text-slate-500"><%= t("attachments.uploaded_by") %></dt>
+        <dd class="text-sm text-slate-900 col-span-2"><%= @attachment.uploaded_by_user.display_name %></dd>
+      </div>
+      <div class="px-6 py-4 grid grid-cols-3 gap-4">
+        <dt class="text-sm font-medium text-slate-500"><%= t("attachments.uploaded_at") %></dt>
+        <dd class="text-sm text-slate-900 col-span-2"><%= l(@attachment.uploaded_at, format: :default) if @attachment.uploaded_at %></dd>
+      </div>
+    </dl>
+  </div>
+</div>

@@ -1,0 +1,56 @@
+<% @data.each do |day| %>
+  <div class="mb-6">
+    <h2 class="text-lg font-semibold text-slate-800 mb-3 flex items-center gap-2">
+      <svg class="w-5 h-5 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5"/></svg>
+      <%= format_date(day[:date]) %>
+    </h2>
+
+    <% day[:projects].each do |project_group| %>
+      <div class="glass-card p-5 mb-3">
+        <h3 class="section-title mb-3"><%= project_group[:project].name %></h3>
+
+        <div class="divide-y divide-slate-100">
+          <% project_group[:entries].each do |entry| %>
+            <div class="py-3 first:pt-0 last:pb-0">
+              <div class="flex flex-wrap items-start gap-4">
+                <div class="flex-1 min-w-0">
+                  <div class="flex flex-wrap items-center gap-3 mb-1">
+                    <span class="font-medium text-slate-800"><%= entry[:worker].full_name %></span>
+                    <span class="text-xs px-2 py-0.5 rounded-full bg-slate-100 text-slate-600"><%= entry[:task].name %></span>
+                    <span class="text-xs text-slate-500"><%= t("reports.activity_hours", hours: format_number(entry[:hours_worked], precision: 1)) %></span>
+                  </div>
+
+                  <% if entry[:scope].present? %>
+                    <p class="text-sm text-slate-600 mt-1 whitespace-pre-line"><%= entry[:scope] %></p>
+                  <% end %>
+                </div>
+
+                <% if entry[:attachments].any? %>
+                  <div class="flex flex-wrap gap-2">
+                    <% entry[:attachments].each do |attachment| %>
+                      <% if attachment.mime_type&.start_with?("image/") %>
+                        <%= link_to attachment_path(attachment),
+                              class: "block w-16 h-16 rounded-lg overflow-hidden border border-slate-200 hover:border-indigo-400 transition-colors",
+                              data: { lightbox_target: "item", action: "click->lightbox#open" } do %>
+                          <div class="w-full h-full bg-slate-100 flex items-center justify-center">
+                            <svg class="w-6 h-6 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909M3.75 21h16.5a2.25 2.25 0 002.25-2.25V5.25a2.25 2.25 0 00-2.25-2.25H3.75a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 003.75 21z"/></svg>
+                          </div>
+                        <% end %>
+                      <% else %>
+                        <%= link_to download_attachment_path(attachment),
+                              class: "inline-flex items-center gap-1 text-xs text-indigo-600 hover:text-indigo-800 transition-colors" do %>
+                          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M18.375 12.739l-7.693 7.693a4.5 4.5 0 01-6.364-6.364l10.94-10.94A3 3 0 1119.5 7.372L8.552 18.32m.009-.01l-.01.01m5.699-9.941l-7.81 7.81a1.5 1.5 0 002.112 2.13"/></svg>
+                          <span><%= attachment.file_name %></span>
+                        <% end %>
+                      <% end %>
+                    <% end %>
+                  </div>
+                <% end %>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+<% end %>

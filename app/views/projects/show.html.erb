@@ -1,0 +1,237 @@
+<% content_for(:title) { @project.name } %>
+
+<div class="max-w-7xl mx-auto" data-controller="project-tree modal"
+     data-action="keydown@window->modal#keydown">
+  <div class="mb-6">
+    <%= render "shared/back_link", fallback: projects_path %>
+    <div class="flex items-center justify-between mt-2">
+      <div class="flex items-center gap-3">
+        <h1 class="page-title"><%= @project.name %></h1>
+        <%= status_badge(@project.status) %>
+      </div>
+      <% if can_manage? %>
+        <div class="flex items-center gap-2">
+          <%= link_to t("common.edit"), edit_project_path(@project),
+            class: "btn-secondary",
+            aria: { label: "#{t('common.edit')} #{@project.name}" } %>
+          <%= button_to t("common.delete"), project_path(@project), method: :delete,
+            class: "btn-danger",
+            form: { data: { turbo_confirm: t("common.confirm_delete") } },
+            aria: { label: "#{t('common.delete')} #{@project.name}" } %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="glass-card p-6 mb-6">
+    <dl class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+      <div>
+        <dt class="text-sm font-medium text-slate-500"><%= t("projects.client_name") %></dt>
+        <dd class="mt-1 text-sm text-slate-900"><%= @project.client_name.presence || "—" %></dd>
+      </div>
+      <div>
+        <dt class="text-sm font-medium text-slate-500"><%= t("projects.status") %></dt>
+        <dd class="mt-1"><%= status_badge(@project.status) %></dd>
+      </div>
+      <div>
+        <dt class="text-sm font-medium text-slate-500"><%= t("projects.start_date") %></dt>
+        <dd class="mt-1 text-sm text-slate-900"><%= format_date(@project.planned_start_date) %></dd>
+      </div>
+      <div>
+        <dt class="text-sm font-medium text-slate-500"><%= t("projects.end_date") %></dt>
+        <dd class="mt-1 text-sm text-slate-900"><%= format_date(@project.planned_end_date) %></dd>
+      </div>
+      <% if @project.description.present? %>
+        <div class="md:col-span-2">
+          <dt class="text-sm font-medium text-slate-500"><%= t("projects.description") %></dt>
+          <dd class="mt-1 text-sm text-slate-900 whitespace-pre-wrap"><%= @project.description %></dd>
+        </div>
+      <% end %>
+    </dl>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+    <div class="stat-card-static">
+      <p class="stat-label"><%= t("phases.title") %></p>
+      <p class="stat-value"><%= @phases.size %></p>
+    </div>
+    <div class="stat-card-static">
+      <p class="stat-label"><%= t("tasks.title") %></p>
+      <p class="stat-value"><%= @tasks.size %></p>
+    </div>
+    <div class="stat-card-static">
+      <p class="stat-label"><%= t("material_entries.title") %></p>
+      <p class="stat-value"><%= @material_entry_count %></p>
+    </div>
+    <div class="stat-card-static">
+      <p class="stat-label"><%= t("daily_logs.title") %></p>
+      <p class="stat-value"><%= @daily_log_count %></p>
+    </div>
+  </div>
+
+  <div class="glass-card-flush mb-6">
+    <div class="flex items-center justify-between px-6 py-4 border-b border-slate-200/50">
+      <h2 class="section-title"><%= t("projects.phase_or_task") %></h2>
+      <% if can_manage? %>
+        <div class="flex items-center gap-2">
+          <a href="<%= new_project_phase_path(@project) %>"
+             class="btn-secondary btn-sm"
+             data-action="click->modal#open"
+             aria-label="<%= t('phases.new_title') %>"><%= t("phases.new_title") %></a>
+          <a href="<%= new_project_task_path(@project) %>"
+             class="btn-primary btn-sm"
+             data-action="click->modal#open"
+             aria-label="<%= t('tasks.new_title') %>"><%= t("tasks.new_title") %></a>
+        </div>
+      <% end %>
+    </div>
+
+    <% if @phases.any? || @tasks.any? %>
+      <div class="overflow-x-auto">
+        <table class="table-premium" role="table">
+          <thead>
+            <tr>
+              <th><%= t("projects.phase_or_task") %></th>
+              <th><%= t("tasks.status") %></th>
+              <th><%= t("tasks.priority") %></th>
+              <th><%= t("tasks.start_date") %></th>
+              <th><%= t("tasks.end_date") %></th>
+              <th class="text-right"><%= t("common.actions") %></th>
+            </tr>
+          </thead>
+          <tbody>
+            <% rendered_task_ids = Set.new %>
+            <% @chronological_items.each do |item| %>
+              <% if item[:type] == :phase %>
+                <% phase = item[:item] %>
+                <% phase_tasks = phase.tasks.sort_by(&:planned_start_date) %>
+                <tr class="bg-violet-50/40 border-l-4 border-violet-500 hover:bg-violet-50/60 transition-colors cursor-pointer group"
+                    data-project-tree-target="phaseRow"
+                    data-phase-id="<%= phase.id %>"
+                    data-action="click->project-tree#toggle">
+                  <td class="px-4 py-3 text-sm font-semibold text-slate-900">
+                    <div class="flex items-center gap-2">
+                      <span class="toggle-icon text-violet-600 p-1 -ml-1">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                      </span>
+                      <span class="font-semibold"><%= phase.name %></span>
+                      <span class="ml-2 text-xs font-normal text-slate-500">
+                        <%= format_date(phase.planned_start_date) %> — <%= format_date(phase.planned_end_date) %>
+                        · <%= phase_tasks.size %> <%= t("tasks.title").downcase %>
+                      </span>
+                    </div>
+                  </td>
+                  <td class="px-4 py-3 text-sm"><%= status_badge(phase.status) %></td>
+                  <td class="px-4 py-3 text-sm"><%= priority_badge(phase.priority) %></td>
+                  <td class="px-4 py-3 text-sm text-slate-500"><%= format_date(phase.planned_start_date) %></td>
+                  <td class="px-4 py-3 text-sm text-slate-500"><%= format_date(phase.planned_end_date) %></td>
+                  <td class="px-4 py-3 text-sm text-right space-x-2" data-action="click->project-tree#stopProp">
+                    <% if policy(phase).update? %>
+                      <a href="<%= edit_project_phase_path(@project, phase) %>"
+                         class="link-primary text-sm"
+                         data-action="click->modal#open"
+                         aria-label="<%= "#{t('common.edit')} #{phase.name}" %>"><%= t("common.edit") %></a>
+                    <% end %>
+                    <% if policy(phase).destroy? %>
+                      <%= button_to t("common.delete"), project_phase_path(@project, phase), method: :delete,
+                        class: "link-danger text-sm",
+                        form: { data: { turbo_confirm: t("common.confirm_delete") } },
+                        aria: { label: "#{t('common.delete')} #{phase.name}" } %>
+                    <% end %>
+                  </td>
+                </tr>
+                <% phase_tasks.each do |task| %>
+                  <% rendered_task_ids.add(task.id) %>
+                  <tr class="hover:bg-violet-50/30 transition-colors bg-white/50"
+                      data-project-tree-target="phaseTasks"
+                      data-phase-id="<%= phase.id %>">
+                    <td class="px-4 py-3 text-sm pl-14">
+                      <div class="flex items-center gap-2">
+                        <div class="w-0.5 h-5 bg-violet-300 rounded"></div>
+                        <span class="font-medium text-slate-900"><%= task.name %></span>
+                      </div>
+                    </td>
+                    <td class="px-4 py-3 text-sm"><%= status_badge(task.status) %></td>
+                    <td class="px-4 py-3 text-sm"><%= priority_badge(task.priority) %></td>
+                    <td class="px-4 py-3 text-sm text-slate-500"><%= format_date(task.planned_start_date) %></td>
+                    <td class="px-4 py-3 text-sm text-slate-500"><%= format_date(task.planned_end_date) %></td>
+                    <td class="px-4 py-3 text-sm text-right space-x-2">
+                      <% if policy(task).update? %>
+                        <a href="<%= edit_project_task_path(@project, task) %>"
+                           class="link-primary text-sm"
+                           data-action="click->modal#open"
+                           aria-label="<%= "#{t('common.edit')} #{task.name}" %>"><%= t("common.edit") %></a>
+                      <% end %>
+                      <% if policy(task).destroy? %>
+                        <%= button_to t("common.delete"), project_task_path(@project, task), method: :delete,
+                          class: "link-danger text-sm",
+                          form: { data: { turbo_confirm: t("common.confirm_delete") } },
+                          aria: { label: "#{t('common.delete')} #{task.name}" } %>
+                      <% end %>
+                    </td>
+                  </tr>
+                <% end %>
+              <% elsif item[:type] == :task %>
+                <% task = item[:item] %>
+                <% unless rendered_task_ids.include?(task.id) %>
+                  <tr class="hover:bg-slate-50/50 transition-colors">
+                    <td class="px-4 py-3 text-sm">
+                      <span class="font-medium text-slate-900"><%= task.name %></span>
+                    </td>
+                    <td class="px-4 py-3 text-sm"><%= status_badge(task.status) %></td>
+                    <td class="px-4 py-3 text-sm"><%= priority_badge(task.priority) %></td>
+                    <td class="px-4 py-3 text-sm text-slate-500"><%= format_date(task.planned_start_date) %></td>
+                    <td class="px-4 py-3 text-sm text-slate-500"><%= format_date(task.planned_end_date) %></td>
+                    <td class="px-4 py-3 text-sm text-right space-x-2">
+                      <% if policy(task).update? %>
+                        <a href="<%= edit_project_task_path(@project, task) %>"
+                           class="link-primary text-sm"
+                           data-action="click->modal#open"
+                           aria-label="<%= "#{t('common.edit')} #{task.name}" %>"><%= t("common.edit") %></a>
+                      <% end %>
+                      <% if policy(task).destroy? %>
+                        <%= button_to t("common.delete"), project_task_path(@project, task), method: :delete,
+                          class: "link-danger text-sm",
+                          form: { data: { turbo_confirm: t("common.confirm_delete") } },
+                          aria: { label: "#{t('common.delete')} #{task.name}" } %>
+                      <% end %>
+                    </td>
+                  </tr>
+                <% end %>
+              <% end %>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    <% else %>
+      <div class="p-6">
+        <p class="text-sm text-slate-500"><%= t("common.no_records") %></p>
+      </div>
+    <% end %>
+  </div>
+
+  <div class="flex items-center gap-3">
+    <%= link_to t("material_entries.title"), project_material_entries_path(@project),
+      class: "btn-secondary" %>
+  </div>
+
+  <%# Modal dialog for phase/task forms %>
+  <div data-modal-target="dialog"
+       class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto mx-4">
+      <div class="flex items-center justify-end px-6 py-4 border-b border-slate-200/50">
+        <button type="button" class="text-slate-400 hover:text-slate-600 transition-colors"
+                data-action="click->modal#close" aria-label="<%= t('common.close') %>">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
+      <div class="p-6">
+        <%= turbo_frame_tag "modal_content" %>
+      </div>
+    </div>
+  </div>
+</div>

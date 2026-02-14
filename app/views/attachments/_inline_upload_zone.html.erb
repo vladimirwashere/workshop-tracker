@@ -1,0 +1,30 @@
+<% if policy(Attachment).create? %>
+  <div>
+    <p class="label-premium mb-2"><%= t("attachments.upload.attach_files_optional") %></p>
+    <div class="border-2 border-dashed border-slate-300 rounded-xl p-4 text-center transition-colors cursor-pointer hover:border-indigo-400 hover:bg-indigo-50/30"
+         data-attachment-upload-target="dropZone"
+         data-action="dragover->attachment-upload#dragOver dragenter->attachment-upload#dragEnter dragleave->attachment-upload#dragLeave drop->attachment-upload#drop click->attachment-upload#triggerFileInput">
+      <p class="text-sm text-slate-600">
+        <span class="font-semibold text-indigo-600"><%= t("attachments.upload.choose_files") %></span>
+        <%= t("attachments.upload.or_drag") %>
+      </p>
+      <p class="mt-1 text-xs text-slate-500"><%= t("attachments.upload.hint") %></p>
+      <%= file_field_tag :files, multiple: true,
+            class: "sr-only",
+            accept: Attachment::ALLOWED_CONTENT_TYPES.join(","),
+            data: { attachment_upload_target: "fileInput", action: "change->attachment-upload#filesSelected" } %>
+    </div>
+    <div data-attachment-upload-target="previewArea" class="hidden mt-3">
+      <div class="flex items-center justify-between mb-2">
+        <span class="text-sm font-medium text-slate-700" data-attachment-upload-target="fileCount"></span>
+        <button type="button" class="text-sm text-red-600 hover:text-red-700" data-action="click->attachment-upload#clearFiles">
+          <%= t("attachments.upload.clear") %>
+        </button>
+      </div>
+      <div data-attachment-upload-target="previewList" class="grid grid-cols-2 sm:grid-cols-3 gap-2"></div>
+    </div>
+    <div data-attachment-upload-target="errorToast" class="hidden fixed bottom-4 right-4 z-50 max-w-sm bg-red-50/80 backdrop-blur-sm border border-red-200/50 rounded-xl p-4 shadow-lg">
+      <p class="text-sm text-red-700" data-attachment-upload-target="errorMessage"></p>
+    </div>
+  </div>
+<% end %>

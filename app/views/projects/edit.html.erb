@@ -1,0 +1,12 @@
+<% content_for(:title) { t("projects.edit_title") } %>
+
+<div class="max-w-3xl mx-auto">
+  <div class="mb-6">
+    <%= render "shared/back_link", fallback: project_path(@project) %>
+    <h1 class="page-title mt-2"><%= t("projects.edit_title") %></h1>
+  </div>
+
+  <div class="glass-card p-6">
+    <%= render "form", project: @project %>
+  </div>
+</div>

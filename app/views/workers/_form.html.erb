@@ -1,0 +1,38 @@
+<%= form_with(model: worker, class: "space-y-6") do |f| %>
+  <%= render "shared/form_errors", record: worker %>
+
+  <div>
+    <%= f.label :full_name, t("workers.full_name"), class: "label-premium" %>
+    <%= f.text_field :full_name,
+      class: "mt-1 input-premium",
+      required: true,
+      aria: { label: t("workers.full_name") } %>
+  </div>
+
+  <div>
+    <%= f.label :trade, t("workers.trade"), class: "label-premium" %>
+    <%= f.text_field :trade,
+      class: "mt-1 input-premium",
+      aria: { label: t("workers.trade") } %>
+  </div>
+
+  <div class="flex items-center gap-2">
+    <%= f.check_box :active,
+      class: "rounded-lg border-slate-300 text-indigo-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500",
+      aria: { label: t("workers.active") } %>
+    <%= f.label :active, t("workers.active"), class: "text-sm font-medium text-slate-700" %>
+  </div>
+
+  <div>
+    <%= f.label :notes, t("workers.notes"), class: "label-premium" %>
+    <%= f.text_area :notes,
+      rows: 4,
+      class: "mt-1 input-premium",
+      aria: { label: t("workers.notes") } %>
+  </div>
+
+  <div class="flex items-center gap-3 pt-2">
+    <%= f.submit t("common.save"), class: "btn-primary" %>
+    <%= link_to t("common.cancel"), workers_path, class: "btn-secondary" %>
+  </div>
+<% end %>

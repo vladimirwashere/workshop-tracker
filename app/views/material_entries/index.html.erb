@@ -1,0 +1,119 @@
+<% content_for(:title) { t("material_entries.title") } %>
+
+<div class="max-w-7xl mx-auto">
+  <div class="mb-6">
+    <% if @project %>
+      <%= render "shared/back_link", fallback: project_path(@project) %>
+    <% end %>
+    <div class="flex items-center justify-between mt-2">
+      <div>
+        <h1 class="page-title"><%= t("material_entries.title") %></h1>
+        <% if @project %>
+          <p class="mt-1 text-sm"><%= link_to @project.name, project_path(@project), class: "link-primary hover:underline" %></p>
+        <% end %>
+      </div>
+      <% if policy(MaterialEntry).create? %>
+        <div class="flex items-center gap-2">
+          <% if @project %>
+            <%= link_to t("material_entries.new_title"), new_project_material_entry_path(@project),
+              class: "btn-primary",
+              aria: { label: t("material_entries.new_title") } %>
+          <% else %>
+            <%= link_to t("material_entries.new_title"), new_material_entry_path,
+              class: "btn-primary",
+              aria: { label: t("material_entries.new_title") } %>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <% unless @project %>
+    <div class="mb-6">
+      <%= render layout: "shared/period_filter", locals: { url: material_entries_path, date_from: @date_from, date_to: @date_to } do %>
+        <div>
+          <% all_projects_selected = params[:filter_project_id].blank? %>
+          <label class="label-premium"><%= t("material_entries.project") %></label>
+          <select name="filter_project_id" class="mt-1 <%= dropdown_all_selected_classes(all_projects_selected) %>"
+                  data-action="change->period-filter#submitForm">
+            <option value=""><%= t("material_entries.all_projects") %></option>
+            <% @projects.each do |p| %>
+              <option value="<%= p.id %>" <%= "selected" if params[:filter_project_id] == p.id.to_s %>><%= p.name %></option>
+            <% end %>
+          </select>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+
+  <div class="glass-card-flush">
+    <% if @material_entries.any? %>
+      <div class="overflow-x-auto">
+        <table class="table-premium" role="table" aria-label="<%= t('material_entries.title') %>">
+          <thead>
+            <tr>
+              <th><%= t("material_entries.date") %></th>
+              <% unless @project %>
+                <th><%= t("material_entries.project") %></th>
+              <% end %>
+              <th><%= t("material_entries.description") %></th>
+              <th class="text-right"><%= t("material_entries.quantity") %></th>
+              <th><%= t("material_entries.unit") %></th>
+              <th class="text-right"><%= t("material_entries.unit_cost") %></th>
+              <th class="text-right"><%= t("material_entries.vat_rate") %></th>
+              <th class="text-right"><%= t("material_entries.total_inc_vat") %></th>
+              <th><%= t("material_entries.supplier") %></th>
+              <th class="text-right"><%= t("common.actions") %></th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @material_entries.each do |entry| %>
+              <tr>
+                <td class="text-slate-600"><%= format_date(entry.date) %></td>
+                <% unless @project %>
+                  <td>
+                    <%= link_to entry.project.name, project_path(entry.project), class: "link-primary font-medium" %>
+                  </td>
+                <% end %>
+                <td class="font-medium">
+                  <%= link_to entry.description, project_material_entry_path(entry.project, entry),
+                    class: "link-primary font-medium" %>
+                </td>
+                <td class="text-right text-slate-600"><%= format_number(entry.quantity) %></td>
+                <td class="text-slate-600"><%= entry.unit %></td>
+                <td class="text-right text-slate-600"><%= format_currency(entry.unit_cost_ex_vat_ron, date: entry.date) %></td>
+                <td class="text-right text-slate-600"><%= number_to_percentage(entry.vat_rate * 100, precision: 0) %></td>
+                <td class="text-right font-medium text-slate-900"><%= format_currency(entry.total_cost_inc_vat_ron, date: entry.date) %></td>
+                <td class="text-slate-600"><%= entry.supplier_name %></td>
+                <td class="text-right whitespace-nowrap">
+                  <div class="flex items-center justify-end gap-2">
+                    <% if policy(entry).show? %>
+                      <%= link_to t("common.view"), project_material_entry_path(entry.project, entry),
+                        class: "link-muted text-sm" %>
+                    <% end %>
+                    <% if policy(entry).update? %>
+                      <%= link_to t("common.edit"), edit_project_material_entry_path(entry.project, entry),
+                        class: "link-primary text-sm" %>
+                    <% end %>
+                    <% if policy(entry).destroy? %>
+                      <%= button_to t("common.delete"), project_material_entry_path(entry.project, entry),
+                        method: :delete,
+                        form: { data: { turbo_confirm: t("common.confirm_delete") } },
+                        class: "link-danger text-sm" %>
+                    <% end %>
+                  </div>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+
+      <%= render "shared/pagination", pagy: @pagy %>
+    <% else %>
+      <div class="p-6">
+        <p class="text-sm text-slate-500"><%= t("material_entries.no_entries") %></p>
+      </div>
+    <% end %>
+  </div>
+</div>

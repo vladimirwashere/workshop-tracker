@@ -1,0 +1,35 @@
+<div class="glass-card p-5">
+  <div class="overflow-x-auto">
+    <table class="table-premium">
+      <thead>
+        <tr>
+          <th><%= t("daily_logs.project") %></th>
+          <th class="text-right"><%= t("reports.worker_days") %></th>
+          <% if can_view_costs? %>
+            <th class="text-right"><%= t("reports.cost") %></th>
+          <% end %>
+        </tr>
+      </thead>
+      <tbody>
+        <% @data.each do |row| %>
+          <tr>
+            <td class="font-medium"><%= row[:project].name %></td>
+            <td class="text-right text-slate-600"><%= row[:total_days] %></td>
+            <% if can_view_costs? %>
+              <td class="text-right text-slate-600"><%= format_currency(row[:total_cost_ron]) %></td>
+            <% end %>
+          </tr>
+        <% end %>
+      </tbody>
+      <tfoot>
+        <tr class="font-semibold">
+          <td><%= t("common.grand_total") %></td>
+          <td class="text-right"><%= @data.sum { |d| d[:total_days] } %></td>
+          <% if can_view_costs? %>
+            <td class="text-right"><%= format_currency(@data.sum { |d| d[:total_cost_ron] }) %></td>
+          <% end %>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+</div>

@@ -1,0 +1,114 @@
+<% content_for(:title, t("reports.financial_title")) %>
+
+<div class="space-y-4">
+  <div class="flex items-center justify-between">
+    <h1 class="page-title"><%= t("reports.financial_title") %></h1>
+    <% if @data.present? && @data.any? %>
+      <div class="flex gap-2">
+        <%= link_to t("common.export_excel"),
+              url_for(request.query_parameters.merge(format: :xlsx)),
+              class: "btn-secondary btn-sm" %>
+        <%= link_to t("common.export_pdf"),
+              url_for(request.query_parameters.merge(format: :pdf)),
+              class: "btn-secondary btn-sm" %>
+      </div>
+    <% end %>
+  </div>
+
+  <%= form_with url: financial_reports_path, method: :get, class: "glass-card p-4 mb-6", data: {
+    controller: "report-filters",
+    report_filters_phases_for_project_url_value: phases_for_project_path("PROJECT_ID").sub("PROJECT_ID", ""),
+    report_filters_tasks_for_project_url_value: tasks_for_project_path("PROJECT_ID").sub("PROJECT_ID", ""),
+    report_filters_all_label_value: t("common.all")
+  } do |f| %>
+    <div class="space-y-4">
+      <div>
+        <label class="label-premium mb-2"><%= t("reports.report_type") %></label>
+        <div class="flex flex-wrap gap-4">
+          <% is_labour_selected = (@report_type || "labour") == "labour" %>
+          <label class="flex items-center px-3 py-1.5 rounded-xl border transition-all duration-200 cursor-pointer <%= report_type_classes(is_labour_selected) %>">
+            <input type="radio" name="report_type" value="labour" <%= "checked" if is_labour_selected %> class="mr-2">
+            <span class="text-sm <%= is_labour_selected ? 'text-indigo-700 font-medium' : 'text-slate-600' %>"><%= t("reports.labour") %></span>
+          </label>
+          <% is_materials_selected = @report_type == "materials" %>
+          <label class="flex items-center px-3 py-1.5 rounded-xl border transition-all duration-200 cursor-pointer <%= report_type_classes(is_materials_selected) %>">
+            <input type="radio" name="report_type" value="materials" <%= "checked" if is_materials_selected %> class="mr-2">
+            <span class="text-sm <%= is_materials_selected ? 'text-indigo-700 font-medium' : 'text-slate-600' %>"><%= t("reports.materials") %></span>
+          </label>
+          <% is_combined_selected = @report_type == "combined" %>
+          <label class="flex items-center px-3 py-1.5 rounded-xl border transition-all duration-200 cursor-pointer <%= report_type_classes(is_combined_selected) %>">
+            <input type="radio" name="report_type" value="combined" <%= "checked" if is_combined_selected %> class="mr-2">
+            <span class="text-sm <%= is_combined_selected ? 'text-indigo-700 font-medium' : 'text-slate-600' %>"><%= t("reports.combined") %></span>
+          </label>
+        </div>
+      </div>
+
+      <div class="flex flex-wrap items-end gap-4 border-t border-slate-200/50 pt-4" data-controller="date-range">
+        <div>
+          <label class="label-premium"><%= t("reports.date_from") %></label>
+          <input type="date" name="from" value="<%= params[:from] || Date.current.beginning_of_month %>"
+                 class="mt-1 input-premium"
+                 data-date-range-target="startDate"
+                 data-action="change->date-range#fillEnd">
+        </div>
+        <div>
+          <label class="label-premium"><%= t("reports.date_to") %></label>
+          <input type="date" name="to" value="<%= params[:to] || Date.current.end_of_month %>"
+                 class="mt-1 input-premium"
+                 data-date-range-target="endDate">
+        </div>
+        <div>
+          <% all_projects_selected = Array(@selected_project_ids).empty? %>
+          <label class="label-premium"><%= t("daily_logs.project") %></label>
+          <select name="project_ids[]" class="mt-1 <%= dropdown_all_selected_classes(all_projects_selected) %>" data-action="change->report-filters#projectChanged" data-report-filters-target="project">
+            <option value=""><%= t("common.all") %></option>
+            <% @projects.each do |p| %>
+              <option value="<%= p.id %>" <%= "selected" if Array(@selected_project_ids).include?(p.id) %>><%= p.name %></option>
+            <% end %>
+          </select>
+        </div>
+        <div>
+          <% all_phases_selected = Array(@selected_phase_ids).empty? %>
+          <label class="label-premium"><%= t("daily_logs.phase") %></label>
+          <select name="phase_ids[]" class="mt-1 <%= dropdown_all_selected_classes(all_phases_selected) %>" data-action="change->report-filters#phaseChanged" data-report-filters-target="phase">
+            <option value=""><%= t("common.all") %></option>
+            <% @phases.each do |phase| %>
+              <option value="<%= phase.id %>" data-project-id="<%= phase.project_id %>" <%= "selected" if Array(@selected_phase_ids).include?(phase.id) %>><%= phase.name %></option>
+            <% end %>
+          </select>
+        </div>
+        <div>
+          <% all_tasks_selected = Array(@selected_task_ids).empty? %>
+          <label class="label-premium"><%= t("daily_logs.task") %></label>
+          <select name="task_ids[]" class="mt-1 <%= dropdown_all_selected_classes(all_tasks_selected) %>" data-action="change->report-filters#taskChanged" data-report-filters-target="task">
+            <option value=""><%= t("common.all") %></option>
+            <% @tasks.each do |task| %>
+              <option value="<%= task.id %>" data-project-id="<%= task.project_id %>" <% if task.phase_id.present? %>data-phase-id="<%= task.phase_id %>"<% end %> <%= "selected" if Array(@selected_task_ids).include?(task.id) %>><%= task.name %></option>
+            <% end %>
+          </select>
+        </div>
+        <div>
+          <%= f.submit t("reports.generate"), class: "btn-primary" %>
+        </div>
+      </div>
+    </div>
+  <% end %>
+
+  <% if @data.present? && @data.any? %>
+    <% case @report_type || "labour" %>
+    <% when "labour" %>
+      <% case @labour_display_format %>
+      <% when "by_project" %>
+        <%= render "reports/labour_by_project_results" %>
+      <% else %>
+        <%= render "reports/labour_summary_results" %>
+      <% end %>
+    <% when "materials" %>
+      <%= render "reports/materials_by_project_results" %>
+    <% when "combined" %>
+      <%= render "reports/combined_cost_results" %>
+    <% end %>
+  <% elsif @generator.present? %>
+    <div class="glass-card p-8 text-center text-slate-500"><%= t("reports.no_data") %></div>
+  <% end %>
+</div>

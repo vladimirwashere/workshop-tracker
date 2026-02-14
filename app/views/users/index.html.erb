@@ -1,0 +1,92 @@
+<% content_for(:title) { t("users.title") } %>
+
+<div class="max-w-7xl mx-auto">
+  <div class="flex items-center justify-between mb-6">
+    <h1 class="page-title"><%= t("users.title") %></h1>
+    <%= link_to t("users.new_title"), new_user_path, class: "btn-primary" %>
+  </div>
+
+  <div class="glass-card p-4 mb-6">
+    <%= form_tag users_path, method: :get, class: "flex items-center gap-3" do %>
+      <div class="flex-1">
+        <label for="search" class="sr-only"><%= t("common.search") %></label>
+        <input type="text" name="search" id="search" value="<%= params[:search] %>"
+               placeholder="<%= t('users.search_placeholder') %>"
+               class="input-premium"
+               aria-label="<%= t('common.search') %>">
+      </div>
+      <button type="submit" class="btn-secondary">
+        <%= t("common.search") %>
+      </button>
+    <% end %>
+  </div>
+
+  <div class="glass-card-flush">
+    <% if @users.any? %>
+      <div class="overflow-x-auto">
+        <table class="table-premium" role="table">
+          <thead>
+            <tr>
+              <th><%= t("users.display_name") %></th>
+              <th><%= t("users.email") %></th>
+              <th><%= t("users.role") %></th>
+              <th><%= t("users.active") %></th>
+              <th class="text-right"><%= t("common.actions") %></th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @users.each do |user| %>
+              <tr>
+                <td class="whitespace-nowrap">
+                  <%= link_to user.display_name, user_path(user), class: "link-primary font-medium text-sm" %>
+                </td>
+                <td class="whitespace-nowrap text-sm text-slate-500"><%= user.email_address %></td>
+                <td class="whitespace-nowrap"><%= status_badge(user.role) %></td>
+                <td class="whitespace-nowrap"><%= active_badge(user.active) %></td>
+                <td class="whitespace-nowrap text-right text-sm space-x-2">
+                  <%= link_to t("common.edit"), edit_user_path(user),
+                    class: "link-primary text-sm" %>
+
+                  <% if user.active? %>
+                    <% if policy(user).deactivate? %>
+                      <%= button_to t("users.deactivate"), deactivate_user_path(user),
+                        method: :patch,
+                        form: { data: { turbo_confirm: t("users.confirm_deactivate") } },
+                        class: "text-yellow-600 hover:text-yellow-800 text-sm font-medium transition-colors" %>
+                    <% end %>
+                  <% else %>
+                    <% if policy(user).reactivate? %>
+                      <%= button_to t("users.reactivate"), reactivate_user_path(user),
+                        method: :patch,
+                        class: "text-green-600 hover:text-green-800 text-sm font-medium transition-colors" %>
+                    <% end %>
+                  <% end %>
+
+                  <% if policy(user).reset_password? %>
+                    <%= button_to t("users.reset_password"), reset_password_user_path(user),
+                      method: :post,
+                      form: { data: { turbo_confirm: t("users.confirm_reset_password") } },
+                      class: "text-orange-600 hover:text-orange-800 text-sm font-medium transition-colors" %>
+                  <% end %>
+
+                  <% if policy(user).destroy? %>
+                    <%= button_to t("common.delete"), soft_delete_user_path(user),
+                      method: :delete,
+                      form: { data: { turbo_confirm: t("users.confirm_delete") } },
+                      class: "link-danger text-sm" %>
+                  <% end %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+
+      <%= render "shared/pagination", pagy: @pagy %>
+    <% else %>
+      <div class="p-6">
+        <p class="text-sm text-slate-500"><%= t("common.no_records") %></p>
+      </div>
+    <% end %>
+  </div>
+</div>

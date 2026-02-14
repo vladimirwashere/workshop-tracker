@@ -1,0 +1,66 @@
+<% content_for(:title) { "#{t('tasks.title')} — #{@project.name}" } %>
+
+<div class="max-w-7xl mx-auto">
+  <div class="mb-6">
+    <%= render "shared/back_link", fallback: project_path(@project) %>
+    <div class="flex items-center justify-between mt-2">
+      <h1 class="page-title"><%= t("tasks.title") %></h1>
+      <% if can_manage? %>
+        <%= link_to t("tasks.new_title"), new_project_task_path(@project),
+          class: "btn-primary",
+          aria: { label: t("tasks.new_title") } %>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="glass-card-flush">
+    <% if @tasks.any? %>
+      <div class="overflow-x-auto">
+        <table class="table-premium" role="table">
+          <thead>
+            <tr>
+              <th><%= t("tasks.name") %></th>
+              <th><%= t("tasks.status") %></th>
+              <th><%= t("tasks.priority") %></th>
+              <th><%= t("tasks.start_date") %></th>
+              <th><%= t("tasks.end_date") %></th>
+              <th><%= t("tasks.assigned_workers") %></th>
+              <th class="text-right"><%= t("common.actions") %></th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @tasks.each do |task| %>
+              <tr>
+                <td>
+                  <%= link_to task.name, project_task_path(@project, task), class: "link-primary font-medium" %>
+                </td>
+                <td><%= status_badge(task.status) %></td>
+                <td><%= priority_badge(task.priority) %></td>
+                <td class="text-slate-500"><%= format_date(task.planned_start_date) %></td>
+                <td class="text-slate-500"><%= format_date(task.planned_end_date) %></td>
+                <td class="text-slate-900"><%= task.workers.size %></td>
+                <td class="text-right space-x-2">
+                  <% if policy(task).update? %>
+                    <%= link_to t("common.edit"), edit_project_task_path(@project, task),
+                      class: "link-primary text-sm",
+                      aria: { label: "#{t('common.edit')} #{task.name}" } %>
+                  <% end %>
+                  <% if policy(task).destroy? %>
+                    <%= button_to t("common.delete"), project_task_path(@project, task), method: :delete,
+                      class: "link-danger text-sm",
+                      form: { data: { turbo_confirm: t("common.confirm_delete") } },
+                      aria: { label: "#{t('common.delete')} #{task.name}" } %>
+                  <% end %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    <% else %>
+      <div class="p-6">
+        <p class="text-sm text-slate-500"><%= t("common.no_records") %></p>
+      </div>
+    <% end %>
+  </div>
+</div>

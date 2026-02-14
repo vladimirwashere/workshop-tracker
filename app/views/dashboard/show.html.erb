@@ -1,0 +1,68 @@
+<% content_for(:title, t("dashboard.title")) %>
+
+<div class="space-y-6">
+  <div class="flex items-center justify-between">
+    <h1 class="page-title"><%= t("dashboard.title") %></h1>
+  </div>
+
+  <%= render layout: "shared/period_filter", locals: { url: dashboard_path, date_from: @date_range.first, date_to: @date_range.last } do %>
+    <div>
+      <% all_projects_selected = Array(params[:project_ids]).reject(&:blank?).empty? %>
+      <label class="label-premium"><%= t("daily_logs.project") %></label>
+      <select name="project_ids[]" class="mt-1 <%= dropdown_all_selected_classes(all_projects_selected) %>"
+              data-action="change->period-filter#submitForm">
+        <option value=""><%= t("material_entries.all_projects") %></option>
+        <% @projects.each do |p| %>
+          <option value="<%= p.id %>" <%= "selected" if Array(params[:project_ids]).include?(p.id.to_s) %>><%= p.name %></option>
+        <% end %>
+      </select>
+    </div>
+  <% end %>
+
+  <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+    <%= link_to financial_reports_path(report_type: "labour", from: @date_range.first, to: @date_range.last), class: "stat-card" do %>
+      <p class="stat-label"><%= t("dashboard.total_labour") %></p>
+      <p class="stat-value"><%= format_currency(@kpis[:total_labour_ron]) %></p>
+    <% end %>
+
+    <%= link_to financial_reports_path(report_type: "materials", from: @date_range.first, to: @date_range.last), class: "stat-card" do %>
+      <p class="stat-label"><%= t("dashboard.total_materials") %></p>
+      <p class="stat-value"><%= format_currency(@kpis[:total_materials_ron]) %></p>
+    <% end %>
+
+    <%= link_to financial_reports_path(report_type: "combined", from: @date_range.first, to: @date_range.last), class: "stat-card" do %>
+      <p class="stat-label"><%= t("dashboard.total_combined") %></p>
+      <p class="stat-value"><%= format_currency(@kpis[:total_combined_ron]) %></p>
+    <% end %>
+  </div>
+
+  <div class="glass-card p-5">
+    <h2 class="section-title mb-4"><%= t("dashboard.top_projects") %></h2>
+    <% if @kpis[:top_projects].any? %>
+      <div class="overflow-x-auto">
+        <table class="table-premium" role="table">
+          <thead>
+            <tr>
+              <th><%= t("projects.name") %></th>
+              <th class="text-right"><%= t("dashboard.total_labour") %></th>
+              <th class="text-right"><%= t("dashboard.total_materials") %></th>
+              <th class="text-right"><%= t("common.total") %></th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @kpis[:top_projects].each do |row| %>
+              <tr>
+                <td class="font-medium"><%= link_to row[:project].name, project_path(row[:project]), class: "link-primary font-medium" %></td>
+                <td class="text-right text-slate-600"><%= format_currency(row[:labour_cost_ron]) %></td>
+                <td class="text-right text-slate-600"><%= format_currency(row[:materials_inc_vat_ron]) %></td>
+                <td class="text-right font-semibold text-slate-900"><%= format_currency(row[:total_ron]) %></td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    <% else %>
+      <p class="text-slate-500"><%= t("reports.no_data") %></p>
+    <% end %>
+  </div>
+</div>

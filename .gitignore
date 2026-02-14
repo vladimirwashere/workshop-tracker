@@ -1,0 +1,39 @@
+/.bundle
+/node_modules
+/public/assets
+/tmp
+/storage
+/log/*.log
+/config/master.key
+/config/credentials/*.key
+/.env
+/.env.*
+!/.env.example
+
+# Editor swap and backup files
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE and editor directories
+/.cursor/
+.cursorrules
+claude.md
+.vscode/
+.idea/
+
+/.byebug_history
+/coverage
+
+# Database dumps and backups
+*.sql
+*.dump
+*.backup
+db/backups/
+
+/app/assets/builds/*
+!/app/assets/builds/.keep

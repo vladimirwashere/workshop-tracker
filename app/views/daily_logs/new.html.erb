@@ -1,0 +1,11 @@
+<% content_for(:title) { t("daily_logs.new_title") } %>
+
+<%= render "shared/back_link", fallback: daily_logs_path %>
+
+<div class="max-w-3xl mx-auto">
+  <h1 class="page-title mb-6"><%= t("daily_logs.new_title") %></h1>
+
+  <div class="glass-card p-6">
+    <%= render "form", daily_log: @daily_log %>
+  </div>
+</div>

@@ -1,0 +1,94 @@
+<% content_for(:title) { t("daily_logs.title") } %>
+<% single_day = @date_from == @date_to %>
+
+<div class="max-w-7xl mx-auto">
+  <div class="flex items-center justify-between mb-6">
+    <h1 class="page-title"><%= t("daily_logs.title") %></h1>
+
+    <% if policy(DailyLog).create? %>
+      <%= link_to t("daily_logs.add_log"), new_daily_log_path(log_date: @date_from),
+        class: "btn-primary" %>
+    <% end %>
+  </div>
+
+  <div class="mb-6">
+    <%= render layout: "shared/period_filter", locals: { url: daily_logs_path, date_from: @date_from, date_to: @date_to } do %>
+    <% end %>
+  </div>
+
+  <div class="glass-card-flush">
+    <% if @daily_logs.any? %>
+      <div class="overflow-x-auto">
+        <table class="table-premium" role="table" aria-label="<%= t('daily_logs.title') %>">
+          <thead>
+            <tr>
+              <% unless single_day %>
+                <th><%= t("daily_logs.log_date") %></th>
+              <% end %>
+              <th><%= t("daily_logs.worker") %></th>
+              <th><%= t("daily_logs.project") %></th>
+              <th><%= t("daily_logs.task") %></th>
+              <th class="text-right"><%= t("daily_logs.hours") %></th>
+              <th><%= t("daily_logs.scope") %></th>
+              <th class="text-right"><%= t("common.actions") %></th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @daily_logs.each do |log| %>
+              <tr>
+                <% unless single_day %>
+                  <td class="text-slate-600"><%= format_date(log.log_date) %></td>
+                <% end %>
+                <td class="font-medium"><%= link_to log.worker.full_name, worker_path(log.worker), class: "link-primary font-medium" %></td>
+                <td><%= link_to log.project.name, project_path(log.project), class: "link-primary font-medium" %></td>
+                <td><%= link_to log.task.name, project_task_path(log.project, log.task), class: "link-primary font-medium" %></td>
+                <td class="text-right text-slate-700"><%= format_number(log.hours_worked, precision: 1) %></td>
+                <td class="text-slate-500 max-w-xs break-words"><%= log.scope %></td>
+                <td class="text-right whitespace-nowrap">
+                  <div class="flex items-center justify-end gap-2">
+                    <% if policy(log).show? %>
+                      <%= link_to t("common.view"), daily_log_path(log),
+                        class: "link-muted text-sm" %>
+                    <% end %>
+                    <% if policy(log).update? %>
+                      <%= link_to t("common.edit"), edit_daily_log_path(log),
+                        class: "link-primary text-sm" %>
+                    <% end %>
+                    <% if policy(log).create? %>
+                      <%= button_to t("daily_logs.duplicate"), duplicate_daily_logs_path(daily_log_id: log.id),
+                        method: :post,
+                        class: "text-green-600 hover:text-green-800 text-sm transition-colors" %>
+                    <% end %>
+                    <% if policy(log).destroy? %>
+                      <%= button_to t("common.delete"), daily_log_path(log),
+                        method: :delete,
+                        form: { data: { turbo_confirm: t("common.confirm_delete") } },
+                        class: "link-danger text-sm" %>
+                    <% end %>
+                  </div>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+          <tfoot>
+            <tr>
+              <td colspan="<%= single_day ? 3 : 4 %>" class="font-semibold text-slate-900"><%= t("daily_logs.total_hours") %></td>
+              <td class="font-semibold text-slate-900 text-right"><%= format_number(@daily_logs.sum(:hours_worked), precision: 1) %></td>
+              <td colspan="2"></td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    <% else %>
+      <div class="p-6">
+        <p class="text-sm text-slate-500">
+          <% if single_day %>
+            <%= t("daily_logs.no_logs") %>
+          <% else %>
+            <%= t("daily_logs.no_logs_range", from: format_date(@date_from), to: format_date(@date_to)) %>
+          <% end %>
+        </p>
+      </div>
+    <% end %>
+  </div>
+</div>

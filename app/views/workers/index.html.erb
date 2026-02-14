@@ -1,0 +1,80 @@
+<% content_for(:title) { t("workers.title") } %>
+
+<div class="max-w-7xl mx-auto">
+  <div class="flex items-center justify-between mb-6">
+    <h1 class="page-title"><%= t("workers.title") %></h1>
+
+    <% if policy(Worker).create? %>
+      <%= link_to t("workers.new_title"), new_worker_path, class: "btn-primary" %>
+    <% end %>
+  </div>
+
+  <div class="glass-card p-4 mb-6">
+    <%= form_tag workers_path, method: :get, class: "flex items-center gap-3" do %>
+      <input type="text" name="search" value="<%= params[:search] %>"
+             placeholder="<%= t('common.search') %>..."
+             class="flex-1 input-premium"
+             aria-label="<%= t('common.search') %>">
+      <button type="submit" class="btn-primary">
+        <%= t("common.search") %>
+      </button>
+    <% end %>
+  </div>
+
+  <div class="glass-card-flush">
+    <% if @workers.any? %>
+      <div class="overflow-x-auto">
+        <table class="table-premium" role="table">
+          <thead>
+            <tr>
+              <th><%= t("workers.full_name") %></th>
+              <th><%= t("workers.trade") %></th>
+              <th><%= t("workers.active") %></th>
+              <% if policy(Worker.new).view_salary? %>
+                <th><%= t("workers.current_salary") %></th>
+              <% end %>
+              <th class="text-right"><%= t("common.actions") %></th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @workers.each do |worker| %>
+              <tr>
+                <td class="font-medium">
+                  <%= link_to worker.full_name, worker_path(worker), class: "link-primary font-medium" %>
+                </td>
+                <td class="text-slate-600"><%= worker.trade %></td>
+                <td><%= active_badge(worker.active) %></td>
+                <% if policy(Worker.new).view_salary? %>
+                  <td class="text-slate-600">
+                    <% salary = worker.current_salary_cached %>
+                    <% if salary %>
+                      <%= format_currency(salary.gross_monthly_ron, date: salary.effective_from) %>
+                    <% else %>
+                      <span class="text-slate-400">&mdash;</span>
+                    <% end %>
+                  </td>
+                <% end %>
+                <td class="text-right space-x-2">
+                  <%= link_to t("common.edit"), edit_worker_path(worker),
+                    class: "link-primary text-sm" if policy(worker).update? %>
+                  <% if policy(worker).destroy? %>
+                    <%= button_to t("common.delete"), worker_path(worker),
+                      method: :delete,
+                      form: { data: { turbo_confirm: t("common.confirm_delete") } },
+                      class: "link-danger text-sm" %>
+                  <% end %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+
+      <%= render "shared/pagination", pagy: @pagy %>
+    <% else %>
+      <div class="p-6">
+        <p class="text-sm text-slate-500"><%= t("common.no_records") %></p>
+      </div>
+    <% end %>
+  </div>
+</div>

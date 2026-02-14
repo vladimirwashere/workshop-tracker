@@ -1,0 +1,82 @@
+<%= form_with(model: daily_log, class: "space-y-6", multipart: true, data: {
+      controller: "daily-log-form attachment-upload",
+      daily_log_form_phases_for_project_url_value: phases_for_project_path("PROJECT_ID").sub("PROJECT_ID", ""),
+      daily_log_form_tasks_for_project_url_value: tasks_for_project_path("PROJECT_ID").sub("PROJECT_ID", ""),
+      daily_log_form_all_phases_label_value: t("daily_logs.all_phases"),
+      daily_log_form_default_task_label_value: "-- #{t('daily_logs.task')} --",
+      attachment_upload_max_size_value: Attachment::MAX_FILE_SIZE,
+      attachment_upload_allowed_types_value: Attachment::ALLOWED_CONTENT_TYPES.join(",")
+    }) do |f| %>
+  <%= render "shared/form_errors", record: daily_log %>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div>
+      <%= f.label :project_id, t("daily_logs.project"), class: "label-premium" %>
+      <%= f.collection_select :project_id, @projects, :id, :name,
+        { prompt: "-- #{t('daily_logs.project')} --" },
+        { class: "mt-1 select-premium w-full",
+          "aria-label": t("daily_logs.project"),
+          data: { action: "change->daily-log-form#projectChanged", daily_log_form_target: "project" } } %>
+    </div>
+
+    <div>
+      <label for="daily_log_phase_filter" class="label-premium"><%= t("daily_logs.phase") %></label>
+      <select id="daily_log_phase_filter" name="phase_id" class="mt-1 select-premium w-full"
+        aria-label="<%= t('daily_logs.phase') %>"
+        data-daily-log-form-target="phase"
+        data-action="change->daily-log-form#phaseChanged">
+        <option value=""><%= t("daily_logs.all_phases") %></option>
+        <% @phases.each do |phase| %>
+          <option value="<%= phase.id %>"<%= " selected" if @phase_id_filter == phase.id %>><%= phase.name %></option>
+        <% end %>
+      </select>
+    </div>
+
+    <div>
+      <%= f.label :task_id, t("daily_logs.task"), class: "label-premium" %>
+      <%= f.collection_select :task_id, @tasks, :id, :name,
+        { prompt: "-- #{t('daily_logs.task')} --" },
+        { class: "mt-1 select-premium w-full",
+          "aria-label": t("daily_logs.task"),
+          data: { action: "change->daily-log-form#taskChanged", daily_log_form_target: "task" } } %>
+    </div>
+
+    <div>
+      <%= f.label :worker_id, t("daily_logs.worker"), class: "label-premium" %>
+      <%= f.collection_select :worker_id, @workers, :id, :full_name,
+        { prompt: "-- #{t('daily_logs.worker')} --" },
+        { class: "mt-1 select-premium w-full",
+          "aria-label": t("daily_logs.worker") } %>
+    </div>
+
+    <div>
+      <%= f.label :log_date, t("daily_logs.log_date"), class: "label-premium" %>
+      <%= f.date_field :log_date,
+        class: "mt-1 input-premium",
+        "aria-label": t("daily_logs.log_date") %>
+    </div>
+
+    <div>
+      <%= f.label :hours_worked, t("daily_logs.hours"), class: "label-premium" %>
+      <%= f.number_field :hours_worked, step: 0.5, min: 0, max: 24,
+        class: "mt-1 input-premium",
+        "aria-label": t("daily_logs.hours") %>
+    </div>
+  </div>
+
+  <div>
+    <%= f.label :scope, t("daily_logs.scope"), class: "label-premium" %>
+    <%= f.text_area :scope, rows: 3,
+      class: "mt-1 input-premium",
+      "aria-label": t("daily_logs.scope") %>
+  </div>
+
+  <%= render "attachments/inline_upload_zone" %>
+
+  <div class="flex items-center justify-end gap-3 pt-4 border-t border-slate-200/50">
+    <% log_date = daily_log.log_date || Date.current %>
+    <%= link_to t("common.cancel"), daily_logs_path(from: log_date, to: log_date),
+      class: "btn-secondary" %>
+    <%= f.submit t("common.save"), class: "btn-primary" %>
+  </div>
+<% end %>

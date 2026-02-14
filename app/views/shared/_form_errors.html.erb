@@ -1,0 +1,16 @@
+<% if record.errors.any? %>
+  <div class="bg-red-50/80 backdrop-blur-sm border border-red-200/50 rounded-xl p-4" role="alert">
+    <div class="flex">
+      <div>
+        <h3 class="text-sm font-medium text-red-800">
+          <%= t("activerecord.errors.template.header", count: record.errors.count, model: record.model_name.human) %>
+        </h3>
+        <ul class="mt-2 text-sm text-red-700 list-disc list-inside">
+          <% record.errors.full_messages.each do |message| %>
+            <li><%= message %></li>
+          <% end %>
+        </ul>
+      </div>
+    </div>
+  </div>
+<% end %>

@@ -1,0 +1,15 @@
+<% content_for(:title) { t("attachments.title") } %>
+
+<div class="max-w-5xl mx-auto">
+  <div class="mb-6">
+    <%= render "shared/back_link", fallback: root_path %>
+    <h1 class="page-title mt-2">
+      <%= t("attachments.title") %>
+      <span class="text-lg font-normal text-slate-500">
+        — <%= @related.respond_to?(:name) ? @related.name : @related.class.model_name.human %>
+      </span>
+    </h1>
+  </div>
+
+  <%= render "attachments/attachments_section", related: @related %>
+</div>

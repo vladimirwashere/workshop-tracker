@@ -1,0 +1,402 @@
+en:
+  date:
+    formats:
+      default: "%d/%m/%y"
+      long: "%d %B %Y"
+      short: "%d/%m"
+  time:
+    formats:
+      default: "%d/%m/%y %H:%M"
+  number:
+    format:
+      separator: "."
+      delimiter: ","
+      precision: 2
+    currency:
+      format:
+        unit: ""
+        format: "%n"
+        separator: "."
+        delimiter: ","
+        precision: 2
+  activerecord:
+    models:
+      user: User
+      worker: Worker
+      project: Project
+      phase: Phase
+      task: Task
+      daily_log: Daily Log
+      material_entry: Material Entry
+    attributes:
+      user:
+        display_name: Display Name
+        email_address: Email
+        password: Password
+        role: Role
+      worker:
+        full_name: Full Name
+        trade: Trade
+      project:
+        name: Name
+        client_name: Client
+        planned_start_date: Start Date
+        planned_end_date: End Date
+    errors:
+      messages:
+        end_date_before_start: "must be on or after the start date"
+        password_complexity: "must include at least one uppercase letter, one lowercase letter, and one digit"
+        password_reused: "has been used recently. Please choose a different password."
+        start_date_before_project: "cannot be before the project start date (%{date})"
+        end_date_after_project: "cannot be after the project end date (%{date})"
+  common:
+    app_name: BAH Workshop
+    all: All
+    total: Total
+    grand_total: Grand Total
+    close: Close
+    not_authorized: "You are not authorized to perform this action."
+    record_not_found: "The requested record could not be found."
+    save: Save
+    cancel: Cancel
+    view: View
+    edit: Edit
+    delete: Delete
+    back: Back
+    actions: Actions
+    confirm_delete: "Are you sure?"
+    copy: Copy
+    copied: Copied!
+    created: "Successfully created."
+    updated: "Successfully updated."
+    deleted: "Successfully deleted."
+    search: Search
+    filter: Filter
+    export_excel: Export Excel
+    export_pdf: Export PDF
+    loading: Loading...
+    no_records: No records found.
+    "yes": "Yes"
+    "no": "No"
+    status: Status
+    date: Date
+    description: Description
+    name: Name
+    currency:
+      ron: RON
+      gbp: GBP
+    roles:
+      admin: Admin
+      owner: Owner
+      manager: Manager
+  gantt:
+    period: Period
+    period_1_week: 1 week
+    period_2_weeks: 2 weeks
+    period_1_month: 1 month
+    period_3_months: 3 months
+    period_6_months: 6 months
+    period_1_year: 1 year
+    filter_by_project: Projects
+    all_projects: All projects
+    projects_selected: "%{count} projects"
+    select_all: Select all
+    clear: Clear
+    legend_project: Project
+    legend_phase: Phase
+    today: Today
+  nav:
+    dashboard: Dashboard
+    planning: Planning
+    projects: Projects
+    daily_logs: Daily Logs
+    workers: Workers
+    materials: Materials
+    reports: Reports
+    financial_reports: Financial
+    activity_reports: Activity
+    gantt: Gantt View
+    settings: Settings
+    admin: Admin
+    users: Users
+    config: Settings
+    account: My Account
+    sign_out: Sign Out
+    fx_rates: FX Rates
+    toggle_menu: Toggle menu
+  sessions:
+    title: Sign In
+    email: Email
+    password: Password
+    sign_in: Sign In
+    forgot_password: Forgot your password?
+    signed_in: Signed in successfully.
+    signed_out: Signed out.
+    invalid_credentials: Invalid email or password.
+    rate_limited: Too many attempts. Please try again later.
+  passwords:
+    title: Reset Password
+    email_prompt: Enter your email to receive reset instructions
+    send_reset: Send Reset Link
+    reset_sent: "If that email exists, reset instructions have been sent."
+    new_password: New Password
+    confirm_password: Confirm Password
+    change_password: Change Password
+    reset_success: Password has been reset. Please sign in.
+    invalid_token: Invalid or expired reset link.
+    mailer_reset_intro: You can reset your password using the link below. This link expires in 15 minutes.
+    mailer_reset_link: Reset Password
+  accounts:
+    title: My Account
+    display_name: Display Name
+    current_password: Current Password
+    new_password: New Password
+    confirm_password: Confirm Password
+    password_hint: Leave blank to keep current password
+    current_password_hint: Required to change email or password
+    email: Email
+    wrong_current_password: Current password is incorrect.
+    updated: Account updated successfully.
+  user_settings:
+    updated: Preferences updated.
+    update_failed: Failed to update preferences.
+  users:
+    title: Users
+    new_title: New User
+    edit_title: Edit User
+    show_title: User Details
+    display_name: Display Name
+    email: Email
+    password: Password
+    password_confirmation: Confirm Password
+    role: Role
+    active: Active
+    confirmed: Confirmed
+    not_confirmed: Not Confirmed
+    created_at: Created
+    deactivate: Deactivate
+    reactivate: Reactivate
+    reset_password: Reset Password
+    created: User created successfully.
+    updated: User updated successfully.
+    deactivated: User deactivated.
+    reactivated: User reactivated.
+    deleted: User deleted.
+    password_reset: "Password has been reset successfully."
+    temp_password_notice: "Temporary password (copy now, it will not be shown again):"
+    confirm_deactivate: "Are you sure you want to deactivate this user?"
+    confirm_delete: "Are you sure you want to delete this user?"
+    confirm_reset_password: "Are you sure you want to reset this user's password?"
+    search_placeholder: "Search by name or email..."
+  workers:
+    title: Workers
+    new_title: New Worker
+    edit_title: Edit Worker
+    full_name: Full Name
+    trade: Trade
+    active: Active
+    notes: Notes
+    salary_history: Salary History
+    current_salary: Current Salary
+    timelines: Worker Timelines
+    timeline_legend: "Vertical bars = daily log entries"
+    no_workers: No active workers found.
+  worker_salaries:
+    title: Salary History
+    new_title: New Salary Record
+    gross_monthly: "Gross Monthly (RON)"
+    net_monthly: "Net Monthly (RON)"
+    daily_rate: "Daily Rate (RON)"
+    effective_from: Effective From
+  projects:
+    title: Projects
+    new_title: New Project
+    edit_title: Edit Project
+    name: Project Name
+    client_name: Client
+    status: Status
+    start_date: Start Date
+    end_date: End Date
+    description: Description
+    phase_or_task: "Phase / Task"
+    statuses:
+      planned: Planned
+      active: Active
+      completed: Completed
+      on_hold: On Hold
+      cancelled: Cancelled
+  tasks:
+    title: Tasks
+    new_title: New Task
+    edit_title: Edit Task
+    name: Task Name
+    priority: Priority
+    status: Status
+    start_date: Start Date
+    end_date: End Date
+    priorities:
+      low: Low
+      medium: Medium
+      high: High
+    statuses:
+      planned: Planned
+      in_progress: In Progress
+      done: Done
+      cancelled: Cancelled
+  phases:
+    title: Phases
+    new_title: New Phase
+    edit_title: Edit Phase
+    name: Phase Name
+    status: Status
+    priority: Priority
+    start_date: Start Date
+    end_date: End Date
+    no_phase: No phase
+    statuses:
+      planned: Planned
+      in_progress: In Progress
+      done: Done
+      cancelled: Cancelled
+    priorities:
+      low: Low
+      medium: Medium
+      high: High
+  daily_logs:
+    title: Daily Logs
+    new_title: New Daily Log
+    edit_title: Edit Daily Log
+    select_date: Select Date
+    date_from: Date From
+    date_to: Date To
+    log_date: Date
+    worker: Worker
+    project: Project
+    task: Task
+    hours: Hours
+    scope: Scope
+    add_log: Add Log
+    phase: Phase
+    all_phases: All phases
+    duplicate: Duplicate
+    no_logs: No logs for this date.
+    no_logs_range: "No logs for the period %{from} to %{to}."
+    created: Daily log created successfully.
+    updated: Daily log updated successfully.
+    deleted: Daily log deleted successfully.
+    duplicated: Daily log duplicated successfully.
+    total_hours: "Total Hours"
+    periods:
+      day: Day
+      week: Current Week
+      month: Current Month
+    showing_range: "Showing %{from} to %{to}"
+  material_entries:
+    title: Materials
+    new_title: New Material Entry
+    edit_title: Edit Material Entry
+    show_title: Material Entry Details
+    description: Description
+    quantity: Quantity
+    unit: Unit
+    unit_cost: "Unit Cost (ex VAT)"
+    unit_cost_inc: "Unit Cost (inc VAT)"
+    vat_input_inc: "Inc VAT"
+    vat_input_ex: "Ex VAT"
+    preview_ex_vat: "Ex VAT: %{amount} RON"
+    preview_inc_vat: "Inc VAT: %{amount} RON"
+    vat_rate: VAT Rate
+    total_ex_vat: "Total (ex VAT)"
+    total_vat: VAT Amount
+    total_inc_vat: "Total (inc VAT)"
+    supplier: Supplier
+    date: Date
+    project: Project
+    all_projects: All Projects
+    date_from: From
+    date_to: To
+    created: Material entry created successfully.
+    updated: Material entry updated successfully.
+    deleted: Material entry deleted successfully.
+    no_entries: No material entries found.
+  configs:
+    title: Settings
+    edit_title: Edit Setting
+    key: Key
+    value: Value
+    updated: Setting updated successfully.
+    no_configs: No settings found.
+  currency_rates:
+    title: FX Rates
+    date: Date
+    base_currency: Base Currency
+    quote_currency: Quote Currency
+    rate: Rate
+    source: Source
+    fetch_latest: Fetch Latest Rates
+    fetch_success: "Rate fetched: 1 RON = %{rate} GBP"
+    fetch_failed: "FX fetch failed: %{error}"
+    no_rates: No currency rates found.
+    missing_fx_short: "No FX"
+    missing_fx_detail: "Exchange rate data is missing for this date. Admin/manager can fetch rates from FX Rates page."
+  attachments:
+    title: Attachments
+    section_title: Attachments
+    file_name: File Name
+    file_size: File Size
+    mime_type: Type
+    uploaded_by: Uploaded By
+    uploaded_at: Uploaded At
+    download: Download
+    no_attachments: No attachments yet.
+    deleted: Attachment deleted successfully.
+    download_unavailable: File download is not yet available.
+    created:
+      one: "%{count} file uploaded successfully."
+      other: "%{count} files uploaded successfully."
+    upload:
+      attach_files_optional: "Attach files (optional)"
+      choose_files: Click to upload
+      or_drag: or drag and drop
+      hint: "Photos, documents, CAD files up to 25 MB"
+      submit: Upload Files
+      clear: Clear all
+    errors:
+      no_files_selected: Please select at least one file.
+      some_failed: "Some files could not be uploaded: %{errors}"
+      file_too_large: "is too large (max %{max_size})"
+      invalid_content_type: "has an unsupported file type"
+  period_filter:
+    date_from: From
+    date_to: To
+    this_week: This Week
+    this_month: This Month
+    this_year: This Year
+  dashboard:
+    title: Dashboard
+    total_labour: Total Labour Cost
+    total_materials: Total Material Cost
+    total_combined: Total Combined Cost
+    top_projects: Top 5 Active Projects
+  reports:
+    title: Reports
+    financial_title: Financial Reports
+    activity_title: Activity Report
+    report_type: Report Type
+    labour: Labour
+    materials: Materials
+    combined: Combined
+    cost: Cost
+    worker_days: Worker Days
+    materials_ex_vat: Materials Ex VAT
+    materials_inc_vat: Materials Inc VAT
+    vat_column: VAT
+    labour_by_project: Labour by Project
+    labour_summary: Labour Summary
+    materials_by_project: Materials by Project
+    combined_cost: Combined Cost
+    date_from: From
+    date_to: To
+    generate: Generate Report
+    no_data: No data for the selected filters.
+    activity_hours: "%{hours}h"

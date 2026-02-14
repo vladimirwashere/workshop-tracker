@@ -1,0 +1,20 @@
+# Gitleaks configuration
+# https://github.com/gitleaks/gitleaks
+
+title = "BAH Workshop Tracker - Gitleaks Config"
+
+[allowlist]
+  description = "Global allowlist"
+  paths = [
+    '''Gemfile\.lock''',
+    '''package-lock\.json''',
+    '''\.env\.example''',
+  ]
+
+# Allow CI-only test secrets (not real credentials)
+[[rules]]
+  id = "ci-test-secrets"
+  description = "CI test secret key base"
+  regex = '''test_secret_key_base_for_ci_only'''
+  [rules.allowlist]
+    paths = ['''.github/workflows/ci\.yml''']

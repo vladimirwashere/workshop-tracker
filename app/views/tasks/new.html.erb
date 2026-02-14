@@ -1,0 +1,6 @@
+<% content_for(:title) { t("tasks.new_title") } %>
+
+<%= turbo_frame_tag "modal_content" do %>
+  <h2 class="section-title mb-4"><%= t("tasks.new_title") %></h2>
+  <%= render "form", task: @task %>
+<% end %>

@@ -1,0 +1,23 @@
+<% content_for(:title, t("workers.timelines")) %>
+
+<div class="space-y-4">
+  <h1 class="page-title"><%= t("workers.timelines") %></h1>
+
+  <div class="glass-card">
+    <% if @workers.any? %>
+      <ul class="divide-y divide-slate-200/50">
+        <% @workers.each do |worker| %>
+          <li class="px-4 py-3 flex items-center justify-between hover:bg-slate-50/50 transition-colors">
+            <div>
+              <span class="font-medium text-slate-800"><%= worker.full_name %></span>
+              <span class="text-sm text-slate-500 ml-2"><%= worker.trade %></span>
+            </div>
+            <%= link_to t("common.view"), worker_timeline_path(worker_id: worker.id), class: "btn-sm btn-secondary" %>
+          </li>
+        <% end %>
+      </ul>
+    <% else %>
+      <p class="p-4 text-slate-500"><%= t("workers.no_workers") %></p>
+    <% end %>
+  </div>
+</div>

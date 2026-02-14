@@ -1,0 +1,108 @@
+<%= form_with(model: @project ? [@project, material_entry] : material_entry, class: "space-y-6", multipart: true, data: {
+      controller: "attachment-upload",
+      attachment_upload_max_size_value: Attachment::MAX_FILE_SIZE,
+      attachment_upload_allowed_types_value: Attachment::ALLOWED_CONTENT_TYPES.join(",")
+    }) do |f| %>
+  <%= render "shared/form_errors", record: material_entry %>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <% unless @project %>
+      <div class="md:col-span-2">
+        <%= f.label :project_id, t("material_entries.project"), class: "label-premium" %>
+        <%= f.collection_select :project_id, @projects, :id, :name,
+          { prompt: "-- #{t('material_entries.project')} --" },
+          { class: "mt-1 select-premium w-full",
+            "aria-label": t("material_entries.project") } %>
+      </div>
+    <% end %>
+
+    <div>
+      <%= f.label :date, t("material_entries.date"), class: "label-premium" %>
+      <%= f.date_field :date,
+        class: "mt-1 input-premium",
+        "aria-label": t("material_entries.date") %>
+    </div>
+
+    <div>
+      <%= f.label :task_id, t("daily_logs.task"), class: "label-premium" %>
+      <%= f.collection_select :task_id, @tasks, :id, :name,
+        { prompt: "-- #{t('daily_logs.task')} --", include_blank: false },
+        { class: "mt-1 select-premium w-full",
+          "aria-label": t("daily_logs.task") } %>
+    </div>
+
+    <div class="md:col-span-2">
+      <%= f.label :description, t("material_entries.description"), class: "label-premium" %>
+      <%= f.text_field :description,
+        class: "mt-1 input-premium",
+        "aria-label": t("material_entries.description") %>
+    </div>
+
+    <div class="md:col-span-2">
+      <%= f.label :supplier_name, t("material_entries.supplier"), class: "label-premium" %>
+      <%= f.text_field :supplier_name,
+        class: "mt-1 input-premium",
+        "aria-label": t("material_entries.supplier") %>
+    </div>
+
+    <div>
+      <%= f.label :quantity, t("material_entries.quantity"), class: "label-premium" %>
+      <%= f.number_field :quantity, step: 0.01, min: 0,
+        class: "mt-1 input-premium",
+        "aria-label": t("material_entries.quantity") %>
+    </div>
+
+    <div>
+      <%= f.label :unit, t("material_entries.unit"), class: "label-premium" %>
+      <%= f.text_field :unit,
+        class: "mt-1 input-premium",
+        placeholder: "pcs, kg, m, m², l",
+        "aria-label": t("material_entries.unit") %>
+    </div>
+
+    <div data-controller="vat-toggle" data-vat-toggle-rate-value="<%= material_entry.vat_rate || MaterialEntry::DEFAULT_VAT_RATE %>">
+      <%= f.label :unit_cost_inc_vat_ron, t("material_entries.unit_cost"), class: "label-premium" %>
+      <%= f.hidden_field :unit_cost_ex_vat_ron, data: { vat_toggle_target: "exInput" } %>
+      <%= f.hidden_field :unit_cost_inc_vat_ron, data: { vat_toggle_target: "incInput" } %>
+      <div class="mt-1 relative rounded-xl shadow-sm">
+        <input type="number" step="0.01" min="0"
+          class="input-premium pr-28"
+          aria-label="<%= t('material_entries.unit_cost') %>"
+          data-vat-toggle-target="visibleInput"
+          data-action="input->vat-toggle#compute"
+          value="<%= (material_entry.vat_input_mode || 'inc') == 'inc' ? material_entry.unit_cost_inc_vat_ron : material_entry.unit_cost_ex_vat_ron %>" />
+        <div class="absolute inset-y-0 right-0 flex items-center">
+          <%= f.select :vat_input_mode,
+            options_for_select([[t("material_entries.vat_input_inc"), "inc"], [t("material_entries.vat_input_ex"), "ex"]], material_entry.vat_input_mode || "inc"),
+            {},
+            { class: "h-full rounded-r-xl border-0 bg-transparent py-0 pl-2 pr-7 text-slate-500 text-sm focus:ring-2 focus:ring-inset focus:ring-indigo-500 cursor-pointer",
+              data: { vat_toggle_target: "modeSelect", action: "change->vat-toggle#modeChanged" } } %>
+        </div>
+      </div>
+      <p class="mt-1 text-xs text-slate-500"
+         data-vat-toggle-target="preview"
+         data-template-ex="<%= t('material_entries.preview_ex_vat', amount: '%{amount}') %>"
+         data-template-inc="<%= t('material_entries.preview_inc_vat', amount: '%{amount}') %>">
+      </p>
+    </div>
+
+    <div>
+      <%= f.label :vat_rate, t("material_entries.vat_rate"), class: "label-premium" %>
+      <% vat_options = MaterialEntry::VAT_RATES.map { |r| ["#{(r * 100).to_i}%", r] } %>
+      <%= f.select :vat_rate,
+        options_for_select(vat_options, material_entry.vat_rate || MaterialEntry::DEFAULT_VAT_RATE),
+        {},
+        { class: "mt-1 select-premium w-full",
+          "aria-label": t("material_entries.vat_rate"),
+          data: { action: "change->vat-toggle#rateChanged" } } %>
+    </div>
+  </div>
+
+  <%= render "attachments/inline_upload_zone" %>
+
+  <div class="flex items-center justify-end gap-3 pt-4 border-t border-slate-200/50">
+    <% cancel_path = @project ? project_material_entries_path(@project) : material_entries_path %>
+    <%= link_to t("common.cancel"), cancel_path, class: "btn-secondary" %>
+    <%= f.submit t("common.save"), class: "btn-primary" %>
+  </div>
+<% end %>

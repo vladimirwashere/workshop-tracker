@@ -1,0 +1,36 @@
+<% @data.each do |row| %>
+  <div class="glass-card p-5">
+    <h2 class="section-title mb-3"><%= row[:project].name %></h2>
+    <table class="table-premium">
+      <thead>
+        <tr>
+          <th><%= t("daily_logs.worker") %></th>
+          <th class="text-right"><%= t("reports.worker_days") %></th>
+          <% if can_view_costs? %>
+            <th class="text-right"><%= t("reports.cost") %></th>
+          <% end %>
+        </tr>
+      </thead>
+      <tbody>
+        <% row[:workers].each do |w| %>
+          <tr>
+            <td><%= w[:worker].full_name %></td>
+            <td class="text-right text-slate-600"><%= w[:days] %></td>
+            <% if can_view_costs? %>
+              <td class="text-right text-slate-600"><%= format_currency(w[:cost_ron]) %></td>
+            <% end %>
+          </tr>
+        <% end %>
+      </tbody>
+      <tfoot>
+        <tr class="font-semibold">
+          <td><%= t("common.total") %></td>
+          <td class="text-right"><%= row[:total_days] %></td>
+          <% if can_view_costs? %>
+            <td class="text-right"><%= format_currency(row[:total_cost_ron]) %></td>
+          <% end %>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+<% end %>

@@ -1,0 +1,88 @@
+<% content_for(:title) { "#{@task.name} — #{@project.name}" } %>
+
+<div class="max-w-7xl mx-auto">
+  <div class="mb-6">
+    <%= render "shared/back_link", fallback: project_path(@project) %>
+    <div class="flex items-center justify-between mt-2">
+      <div class="flex items-center gap-3">
+        <h1 class="page-title"><%= @task.name %></h1>
+        <%= status_badge(@task.status) %>
+        <%= priority_badge(@task.priority) %>
+      </div>
+      <% if can_manage? %>
+        <div class="flex items-center gap-2">
+          <%= link_to t("common.edit"), edit_project_task_path(@project, @task),
+            class: "btn-secondary",
+            aria: { label: "#{t('common.edit')} #{@task.name}" } %>
+          <%= button_to t("common.delete"), project_task_path(@project, @task), method: :delete,
+            class: "btn-danger",
+            form: { data: { turbo_confirm: t("common.confirm_delete") } },
+            aria: { label: "#{t('common.delete')} #{@task.name}" } %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="glass-card p-6 mb-6">
+    <dl class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+      <div>
+        <dt class="text-sm font-medium text-slate-500"><%= t("tasks.status") %></dt>
+        <dd class="mt-1"><%= status_badge(@task.status) %></dd>
+      </div>
+      <div>
+        <dt class="text-sm font-medium text-slate-500"><%= t("tasks.priority") %></dt>
+        <dd class="mt-1"><%= priority_badge(@task.priority) %></dd>
+      </div>
+      <div>
+        <dt class="text-sm font-medium text-slate-500"><%= t("tasks.start_date") %></dt>
+        <dd class="mt-1 text-sm text-slate-900"><%= format_date(@task.planned_start_date) %></dd>
+      </div>
+      <div>
+        <dt class="text-sm font-medium text-slate-500"><%= t("tasks.end_date") %></dt>
+        <dd class="mt-1 text-sm text-slate-900"><%= format_date(@task.planned_end_date) %></dd>
+      </div>
+      <% if @task.description.present? %>
+        <div class="md:col-span-2">
+          <dt class="text-sm font-medium text-slate-500"><%= t("common.description") %></dt>
+          <dd class="mt-1 text-sm text-slate-900 whitespace-pre-wrap"><%= @task.description %></dd>
+        </div>
+      <% end %>
+    </dl>
+  </div>
+
+  <div class="glass-card-flush mb-6">
+    <div class="flex items-center justify-between px-6 py-4 border-b border-slate-200/50">
+      <h2 class="section-title"><%= t("daily_logs.title") %></h2>
+    </div>
+
+    <% daily_logs = @task.daily_logs.kept.includes(:worker).order(log_date: :desc).limit(10) %>
+    <% if daily_logs.any? %>
+      <div class="overflow-x-auto">
+        <table class="table-premium" role="table" aria-label="<%= t('daily_logs.title') %>">
+          <thead>
+            <tr>
+              <th><%= t("daily_logs.log_date") %></th>
+              <th><%= t("workers.full_name") %></th>
+              <th><%= t("daily_logs.hours") %></th>
+            </tr>
+          </thead>
+          <tbody>
+            <% daily_logs.each do |log| %>
+              <tr>
+                <td><%= format_date(log.log_date) %></td>
+                <td><%= link_to log.worker.full_name, worker_path(log.worker), class: "link-primary font-medium" %></td>
+                <td class="text-slate-900"><%= log.hours_worked %></td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    <% else %>
+      <div class="p-6">
+        <p class="text-sm text-slate-500"><%= t("common.no_records") %></p>
+      </div>
+    <% end %>
+  </div>
+
+  <%= render "attachments/attachments_section", related: @task %>
+</div>

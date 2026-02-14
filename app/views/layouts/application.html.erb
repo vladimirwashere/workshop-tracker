@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="<%= I18n.locale %>">
+<head>
+  <title><%= content_for(:title) || t("common.app_name") %></title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta charset="utf-8">
+  <%= csrf_meta_tags %>
+  <%= csp_meta_tag %>
+  <%= yield :head %>
+  <link rel="icon" href="/icon.png" type="image/png" sizes="any">
+  <link rel="apple-touch-icon" href="/icon.png">
+  <%= stylesheet_link_tag :app %>
+  <%= javascript_importmap_tags %>
+</head>
+<body class="bg-gradient-to-br from-slate-50 via-slate-50 to-blue-50/30 text-slate-900 m-0 p-0 h-screen overflow-hidden">
+  <a href="#main-content" class="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:bg-white focus:px-4 focus:py-2 focus:rounded-lg focus:shadow-lg focus:text-indigo-600 focus:text-sm focus:font-medium">
+    Skip to content
+  </a>
+  <div class="flex h-screen overflow-hidden" data-controller="sidebar">
+
+    <%# Mobile overlay %>
+    <div data-sidebar-target="overlay"
+         data-action="click->sidebar#close"
+         class="fixed inset-0 z-30 bg-black/50 hidden md:hidden"
+         aria-hidden="true"></div>
+
+    <%# Sidebar %>
+    <aside data-sidebar-target="sidebar"
+           class="glass-sidebar w-64 shrink-0 h-screen flex flex-col overflow-hidden fixed inset-y-0 left-0 z-40 -translate-x-full transition-transform duration-300 ease-in-out md:translate-x-0 md:static md:z-auto"
+           role="navigation"
+           aria-label="<%= t('nav.dashboard') %>">
+      <div class="p-4 border-b border-white/10 shrink-0">
+        <%= link_to dashboard_path, class: "flex items-center gap-3 no-underline hover:opacity-90 transition-opacity duration-200" do %>
+          <div class="w-10 h-10 flex-shrink-0 rounded-xl bg-white/10 backdrop-blur-sm p-1 border border-white/20">
+            <%= image_tag "logo.png", alt: "B.A.H", class: "w-full h-full object-contain" %>
+          </div>
+          <div class="min-w-0">
+            <h1 class="text-lg font-semibold tracking-tight leading-tight text-white"><%= t("common.app_name") %></h1>
+            <% if Current.user %>
+              <p class="text-xs text-slate-400 capitalize"><%= t("common.roles.#{Current.user.role}") %></p>
+            <% end %>
+          </div>
+        <% end %>
+        <% if Current.user %>
+          <p class="text-sm text-slate-400 mt-2 break-words"><%= Current.user.display_name %></p>
+        <% end %>
+      </div>
+
+      <nav class="flex-1 py-4 overflow-y-auto" aria-label="Main navigation" data-action="click->sidebar#navigate">
+        <ul class="space-y-1 px-2">
+          <% if Current.user&.admin? || Current.user&.owner? || Current.user&.manager? %>
+            <li>
+              <%= sidebar_nav_item(
+                path: dashboard_path,
+                label: t("nav.dashboard"),
+                icon: '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25a2.25 2.25 0 01-2.25-2.25v-2.25z"/></svg>',
+                active: request.path == dashboard_path
+              ) %>
+            </li>
+          <% end %>
+
+          <li class="pt-4">
+            <p class="sidebar-section-label"><%= t("nav.planning") %></p>
+          </li>
+          <li>
+            <%= sidebar_nav_item(
+              path: projects_path,
+              label: t("nav.projects"),
+              icon: '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M2.25 12.75V12A2.25 2.25 0 014.5 9.75h15A2.25 2.25 0 0121.75 12v.75m-8.69-6.44l-2.12-2.12a1.5 1.5 0 00-1.061-.44H4.5A2.25 2.25 0 002.25 6v12a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9a2.25 2.25 0 00-2.25-2.25h-5.379a1.5 1.5 0 01-1.06-.44z"/></svg>',
+              active: request.path.start_with?("/projects")
+            ) %>
+          </li>
+          <li>
+            <%= sidebar_nav_item(
+              path: gantt_path,
+              label: t("nav.gantt"),
+              icon: '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 4.5h14.25M3 9h9.75M3 13.5h9.75m4.5-4.5v12m0 0l-3.75-3.75M17.25 21l3.75-3.75"/></svg>',
+              active: request.path.start_with?("/gantt")
+            ) %>
+          </li>
+          <li>
+            <%= sidebar_nav_item(
+              path: daily_logs_path,
+              label: t("nav.daily_logs"),
+              icon: '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5"/></svg>',
+              active: request.path.start_with?("/daily_logs")
+            ) %>
+          </li>
+          <li>
+            <%= sidebar_nav_item(
+              path: material_entries_path,
+              label: t("nav.materials"),
+              icon: '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 7.5l-9-5.25L3 7.5m18 0l-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9"/></svg>',
+              active: request.path.start_with?("/material_entries")
+            ) %>
+          </li>
+          <li>
+            <%= sidebar_nav_item(
+              path: workers_path,
+              label: t("nav.workers"),
+              icon: '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z"/></svg>',
+              active: request.path.start_with?("/workers")
+            ) %>
+          </li>
+
+          <% if Current.user&.admin? || Current.user&.owner? || Current.user&.manager? %>
+            <li class="pt-4">
+              <p class="sidebar-section-label"><%= t("nav.reports") %></p>
+            </li>
+            <li>
+              <%= sidebar_nav_item(
+                path: financial_reports_path,
+                label: t("nav.financial_reports"),
+                icon: '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z"/></svg>',
+                active: request.path.start_with?("/reports/financial")
+              ) %>
+            </li>
+            <li>
+              <%= sidebar_nav_item(
+                path: activity_reports_path,
+                label: t("nav.activity_reports"),
+                icon: '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"/></svg>',
+                active: request.path.start_with?("/reports/activity")
+              ) %>
+            </li>
+          <% end %>
+
+          <% if Current.user&.admin? || Current.user&.manager? %>
+            <li class="pt-4">
+              <p class="sidebar-section-label"><%= t("nav.settings") %></p>
+            </li>
+            <li>
+              <%= sidebar_nav_item(
+                path: configs_path,
+                label: t("nav.config"),
+                icon: '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 010 .255c-.007.378.138.75.43.99l1.005.828c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 01-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 010-.255c.007-.378-.138-.75-.43-.99l-1.004-.828a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>',
+                active: request.path.start_with?("/configs")
+              ) %>
+            </li>
+            <li>
+              <%= sidebar_nav_item(
+                path: currency_rates_path,
+                label: t("nav.fx_rates"),
+                icon: '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>',
+                active: request.path.start_with?("/currency_rates")
+              ) %>
+            </li>
+          <% end %>
+
+          <% if Current.user&.admin? %>
+            <li class="pt-4">
+              <p class="sidebar-section-label"><%= t("nav.admin") %></p>
+            </li>
+            <li>
+              <%= sidebar_nav_item(
+                path: users_path,
+                label: t("nav.users"),
+                icon: '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z"/></svg>',
+                active: request.path.start_with?("/users")
+              ) %>
+            </li>
+          <% end %>
+        </ul>
+      </nav>
+
+      <div class="border-t border-white/10 p-2 shrink-0">
+        <ul class="space-y-1">
+          <li>
+            <%= sidebar_nav_item(
+              path: account_path,
+              label: t("nav.account"),
+              icon: '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17.982 18.725A7.488 7.488 0 0012 15.75a7.488 7.488 0 00-5.982 2.975m11.963 0a9 9 0 10-11.963 0m11.963 0A8.966 8.966 0 0112 21a8.966 8.966 0 01-5.982-2.275M15 9.75a3 3 0 11-6 0 3 3 0 016 0z"/></svg>',
+              active: request.path.start_with?("/account")
+            ) %>
+          </li>
+          <li>
+            <%= button_to session_path, method: :delete,
+              class: "sidebar-link-inactive w-full text-left" do %>
+              <span class="sidebar-icon">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9"/></svg>
+              </span>
+              <span><%= t("nav.sign_out") %></span>
+            <% end %>
+          </li>
+        </ul>
+      </div>
+    </aside>
+
+    <%# Main Area %>
+    <div class="flex-1 h-screen flex flex-col overflow-hidden">
+      <header class="glass-header shrink-0">
+        <div>
+          <button type="button"
+                  class="md:hidden p-2 -ml-2 text-slate-600 hover:text-slate-900 rounded-lg hover:bg-slate-100"
+                  data-action="click->sidebar#toggle"
+                  aria-label="<%= t('nav.toggle_menu') %>">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"/>
+            </svg>
+          </button>
+        </div>
+        <div class="flex items-center gap-4">
+          <div data-controller="currency-toggle" data-currency-toggle-current-value="<%= current_currency %>" class="flex items-center gap-2">
+            <span class="text-sm text-slate-600 flex items-center gap-1" data-currency-toggle-target="display">
+              <%= current_currency == "RON" ? "🇷🇴" : "🇬🇧" %> <%= current_currency %>
+            </span>
+            <button
+              type="button"
+              data-action="click->currency-toggle#toggle"
+              class="btn-secondary btn-sm"
+              data-currency-toggle-target="button">
+              <%= current_currency == "RON" ? "🇬🇧 GBP" : "🇷🇴 RON" %>
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <main id="main-content" class="bg-transparent flex-1 overflow-y-auto min-w-0">
+        <% if flash[:notice] %>
+          <div class="flash-notice" role="alert">
+            <p><%= flash[:notice] %></p>
+          </div>
+        <% end %>
+        <% if flash[:alert] %>
+          <div class="flash-alert" role="alert">
+            <p><%= flash[:alert] %></p>
+          </div>
+        <% end %>
+        <% if flash[:temp_password] %>
+          <div class="flash-notice" role="alert" data-controller="clipboard">
+            <p><%= t("users.temp_password_notice") %></p>
+            <div class="flex items-center gap-2 mt-1">
+              <span class="font-mono text-lg font-bold select-all" data-clipboard-target="value"><%= flash[:temp_password] %></span>
+              <button type="button" data-action="clipboard#copy"
+                class="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium bg-indigo-100 text-indigo-700 rounded hover:bg-indigo-200 transition">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                </svg>
+                <%= t("common.copy") %>
+              </button>
+              <span data-clipboard-feedback class="hidden text-xs text-green-600 font-medium"><%= t("common.copied") %></span>
+            </div>
+          </div>
+        <% end %>
+
+        <div class="p-6">
+          <%= yield %>
+        </div>
+      </main>
+    </div>
+  </div>
+</body>
+</html>

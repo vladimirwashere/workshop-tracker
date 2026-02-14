@@ -1,0 +1,41 @@
+<div class="glass-card p-4" data-controller="period-filter date-range">
+  <form action="<%= url %>" method="get" data-period-filter-target="form" class="flex flex-wrap items-end gap-4">
+    <div>
+      <label class="label-premium"><%= t("period_filter.date_from") %></label>
+      <input type="date" name="from" value="<%= date_from %>"
+             class="mt-1 input-premium"
+             data-period-filter-target="from"
+             data-date-range-target="startDate"
+             data-action="change->date-range#fillEnd change->period-filter#submitForm">
+    </div>
+    <div>
+      <label class="label-premium"><%= t("period_filter.date_to") %></label>
+      <input type="date" name="to" value="<%= date_to %>"
+             class="mt-1 input-premium"
+             data-period-filter-target="to"
+             data-date-range-target="endDate"
+             data-action="change->period-filter#submitForm">
+    </div>
+
+    <%= yield if block_given? %>
+
+    <div class="flex gap-2 text-xs">
+      <% active_period = active_period(date_from, date_to) %>
+      <button type="button" data-action="click->period-filter#setThisWeek"
+              data-period-filter-target="thisWeekButton"
+              class="px-2.5 py-1 rounded-lg border transition-all duration-200 <%= period_button_classes(active_period == :this_week) %>">
+        <%= t("period_filter.this_week") %>
+      </button>
+      <button type="button" data-action="click->period-filter#setThisMonth"
+              data-period-filter-target="thisMonthButton"
+              class="px-2.5 py-1 rounded-lg border transition-all duration-200 <%= period_button_classes(active_period == :this_month) %>">
+        <%= t("period_filter.this_month") %>
+      </button>
+      <button type="button" data-action="click->period-filter#setThisYear"
+              data-period-filter-target="thisYearButton"
+              class="px-2.5 py-1 rounded-lg border transition-all duration-200 <%= period_button_classes(active_period == :this_year) %>">
+        <%= t("period_filter.this_year") %>
+      </button>
+    </div>
+  </form>
+</div>

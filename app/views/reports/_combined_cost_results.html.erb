@@ -1,0 +1,38 @@
+<div class="glass-card p-5">
+  <div class="overflow-x-auto">
+    <table class="table-premium">
+      <thead>
+        <tr>
+          <th><%= t("daily_logs.project") %></th>
+          <th class="text-right"><%= t("reports.labour") %></th>
+          <th class="text-right"><%= t("reports.materials_ex_vat") %></th>
+          <th class="text-right"><%= t("reports.vat_column") %></th>
+          <th class="text-right"><%= t("reports.materials_inc_vat") %></th>
+          <th class="text-right"><%= t("common.total") %></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @data.each do |row| %>
+          <tr>
+            <td class="font-medium"><%= row[:project].name %></td>
+            <td class="text-right text-slate-600"><%= format_currency(row[:labour_cost_ron]) %></td>
+            <td class="text-right text-slate-600"><%= format_currency(row[:materials_ex_vat_ron]) %></td>
+            <td class="text-right text-slate-600"><%= format_currency(row[:materials_vat_ron]) %></td>
+            <td class="text-right text-slate-600"><%= format_currency(row[:materials_inc_vat_ron]) %></td>
+            <td class="text-right font-semibold text-slate-900"><%= format_currency(row[:total_ron]) %></td>
+          </tr>
+        <% end %>
+      </tbody>
+      <tfoot>
+        <tr class="font-semibold">
+          <td><%= t("common.grand_total") %></td>
+          <td class="text-right"><%= format_currency(@data.sum { |d| d[:labour_cost_ron] }) %></td>
+          <td class="text-right"><%= format_currency(@data.sum { |d| d[:materials_ex_vat_ron] }) %></td>
+          <td class="text-right"><%= format_currency(@data.sum { |d| d[:materials_vat_ron] }) %></td>
+          <td class="text-right"><%= format_currency(@data.sum { |d| d[:materials_inc_vat_ron] }) %></td>
+          <td class="text-right"><%= format_currency(@data.sum { |d| d[:total_ron] }) %></td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+</div>

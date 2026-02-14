@@ -1,0 +1,48 @@
+<% content_for(:title) { t("currency_rates.title") } %>
+
+<div class="max-w-7xl mx-auto">
+  <div class="flex items-center justify-between mb-6">
+    <h1 class="page-title"><%= t("currency_rates.title") %></h1>
+
+    <% if policy(:config).update? %>
+      <%= button_to t("currency_rates.fetch_latest"), fetch_latest_currency_rates_path,
+        method: :post,
+        class: "btn-primary" %>
+    <% end %>
+  </div>
+
+  <div class="glass-card-flush">
+    <% if @currency_rates.any? %>
+      <div class="overflow-x-auto">
+        <table class="table-premium" role="table" aria-label="<%= t('currency_rates.title') %>">
+          <thead>
+            <tr>
+              <th><%= t("currency_rates.date") %></th>
+              <th><%= t("currency_rates.base_currency") %></th>
+              <th><%= t("currency_rates.quote_currency") %></th>
+              <th class="text-right"><%= t("currency_rates.rate") %></th>
+              <th><%= t("currency_rates.source") %></th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @currency_rates.each do |rate| %>
+              <tr>
+                <td class="text-slate-700"><%= format_date(rate.date) %></td>
+                <td class="font-medium text-slate-900"><%= rate.base_currency %></td>
+                <td class="font-medium text-slate-900"><%= rate.quote_currency %></td>
+                <td class="text-slate-700 text-right font-mono"><%= format_number(rate.rate, precision: 6) %></td>
+                <td class="text-slate-500"><%= rate.source %></td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+
+      <%= render "shared/pagination", pagy: @pagy %>
+    <% else %>
+      <div class="p-6">
+        <p class="text-sm text-slate-500"><%= t("currency_rates.no_rates") %></p>
+      </div>
+    <% end %>
+  </div>
+</div>

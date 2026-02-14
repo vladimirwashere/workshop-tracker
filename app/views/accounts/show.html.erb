@@ -1,0 +1,77 @@
+<% content_for(:title, t("accounts.title")) %>
+
+<div class="max-w-2xl mx-auto"
+     data-controller="account-form"
+     data-account-form-editing-value="<%= @editing ? true : false %>"
+     data-account-form-original-email-value="<%= @user.email_address %>">
+  <h1 class="page-title mb-6"><%= t("accounts.title") %></h1>
+
+  <div class="glass-card p-6">
+    <%= form_with model: @user, url: account_path, method: :patch, class: "space-y-4" do |f| %>
+      <%= render "shared/form_errors", record: @user %>
+
+      <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <%# Display name — read-only %>
+        <div data-account-form-target="displayField">
+          <dt class="text-sm font-medium text-slate-500"><%= t("accounts.display_name") %></dt>
+          <dd class="mt-1 text-sm text-slate-900"><%= @user.display_name %></dd>
+        </div>
+        <%# Display name — editable %>
+        <div data-account-form-target="formField" class="hidden">
+          <%= f.label :display_name, t("accounts.display_name"), class: "label-premium mb-1" %>
+          <%= f.text_field :display_name, class: "input-premium" %>
+        </div>
+
+        <%# Email — read-only %>
+        <div data-account-form-target="displayField">
+          <dt class="text-sm font-medium text-slate-500"><%= t("accounts.email") %></dt>
+          <dd class="mt-1 text-sm text-slate-900"><%= @user.email_address %></dd>
+        </div>
+        <%# Email — editable %>
+        <div data-account-form-target="formField" class="hidden">
+          <%= f.label :email_address, t("accounts.email"), class: "label-premium mb-1" %>
+          <%= f.email_field :email_address, class: "input-premium",
+                data: { account_form_target: "emailField", action: "input->account-form#checkSensitive" } %>
+        </div>
+
+        <%# Role — always read-only %>
+        <div>
+          <dt class="text-sm font-medium text-slate-500"><%= t("users.role") %></dt>
+          <dd class="mt-1 text-sm text-slate-900 capitalize"><%= t("common.roles.#{@user.role}") %></dd>
+        </div>
+      </div>
+
+      <%# Change password fields — visible in edit mode %>
+      <div data-account-form-target="changePasswordSection" class="hidden space-y-4 border-t border-slate-100 pt-4 mt-4">
+        <div>
+          <%= f.label :password, t("accounts.new_password"), class: "label-premium mb-1" %>
+          <%= f.password_field :password, class: "input-premium",
+                data: { account_form_target: "newPassword", action: "input->account-form#checkSensitive" } %>
+          <p class="text-xs text-slate-500 mt-1"><%= t("accounts.password_hint") %></p>
+        </div>
+        <div>
+          <%= f.label :password_confirmation, t("accounts.confirm_password"), class: "label-premium mb-1" %>
+          <%= f.password_field :password_confirmation, class: "input-premium",
+                data: { account_form_target: "confirmPassword" } %>
+        </div>
+      </div>
+
+      <%# Current password — appears only when email or password changed %>
+      <div data-account-form-target="confirmPasswordSection" class="hidden border-t border-slate-100 pt-4 mt-4">
+        <label class="label-premium mb-1" for="current_password"><%= t("accounts.current_password") %></label>
+        <input type="password" name="current_password" id="current_password" class="input-premium"
+               data-account-form-target="currentPassword">
+        <p class="text-xs text-slate-500 mt-1"><%= t("accounts.current_password_hint") %></p>
+      </div>
+
+      <div class="flex items-center gap-3 pt-2">
+        <button type="button" data-account-form-target="editButton" data-action="click->account-form#edit" class="btn-primary">
+          <%= t("common.edit") %>
+        </button>
+        <div data-account-form-target="saveButton" class="hidden">
+          <%= f.submit t("common.save"), class: "btn-primary" %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>

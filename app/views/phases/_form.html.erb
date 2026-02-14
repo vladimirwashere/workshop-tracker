@@ -1,0 +1,69 @@
+<%= form_with(model: [@project, phase], class: "space-y-6", data: { controller: "date-range" }) do |form| %>
+  <%= render "shared/form_errors", record: phase %>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div class="md:col-span-2">
+      <%= form.label :name, t("phases.name"), class: "label-premium" %>
+      <%= form.text_field :name,
+        class: "mt-1 input-premium",
+        required: true,
+        aria: { required: true, label: t("phases.name") } %>
+    </div>
+
+    <div>
+      <%= form.label :status, t("phases.status"), class: "label-premium" %>
+      <%= form.select :status,
+        Phase.statuses.keys.map { |s| [t("phases.statuses.#{s}"), s] },
+        {},
+        class: "mt-1 select-premium w-full",
+        aria: { label: t("phases.status") } %>
+    </div>
+
+    <div>
+      <%= form.label :priority, t("phases.priority"), class: "label-premium" %>
+      <%= form.select :priority,
+        Phase.priorities.keys.map { |p| [t("phases.priorities.#{p}"), p] },
+        {},
+        class: "mt-1 select-premium w-full",
+        aria: { label: t("phases.priority") } %>
+    </div>
+
+    <div>
+      <%= form.label :planned_start_date, t("phases.start_date"), class: "label-premium" %>
+      <%= form.date_field :planned_start_date,
+        class: "mt-1 input-premium",
+        required: true,
+        min: @project.planned_start_date,
+        max: @project.planned_end_date,
+        data: { date_range_target: "startDate", action: "change->date-range#fillEnd" },
+        aria: { required: true, label: t("phases.start_date") } %>
+      <p class="mt-1 text-xs text-slate-500">
+        <%= t("projects.start_date") %>: <%= format_date(@project.planned_start_date) %> — <%= t("projects.end_date") %>: <%= format_date(@project.planned_end_date) %>
+      </p>
+    </div>
+
+    <div>
+      <%= form.label :planned_end_date, t("phases.end_date"), class: "label-premium" %>
+      <%= form.date_field :planned_end_date,
+        class: "mt-1 input-premium",
+        required: true,
+        min: @project.planned_start_date,
+        max: @project.planned_end_date,
+        data: { date_range_target: "endDate" },
+        aria: { required: true, label: t("phases.end_date") } %>
+    </div>
+  </div>
+
+  <div>
+    <%= form.label :description, t("common.description"), class: "label-premium" %>
+    <%= form.text_area :description,
+      rows: 4,
+      class: "mt-1 input-premium",
+      aria: { label: t("common.description") } %>
+  </div>
+
+  <div class="flex items-center gap-3 pt-4">
+    <%= form.submit t("common.save"), class: "btn-primary" %>
+    <%= link_to t("common.cancel"), project_path(@project), class: "btn-secondary", data: { turbo_frame: "_top" } %>
+  </div>
+<% end %>

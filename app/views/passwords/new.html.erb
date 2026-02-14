@@ -1,0 +1,20 @@
+<% content_for(:title, t("passwords.title")) %>
+
+<h2 class="text-xl font-semibold text-slate-900 mb-2"><%= t("passwords.title") %></h2>
+<p class="text-sm text-slate-600 mb-6"><%= t("passwords.email_prompt") %></p>
+
+<%= form_with url: passwords_path, class: "space-y-4" do |f| %>
+  <div>
+    <%= f.label :email_address, t("sessions.email"), class: "label-premium mb-1" %>
+    <%= f.email_field :email_address, required: true, autofocus: true, autocomplete: "email",
+      class: "input-premium" %>
+  </div>
+
+  <div>
+    <%= f.submit t("passwords.send_reset"), class: "w-full btn-primary justify-center" %>
+  </div>
+<% end %>
+
+<p class="mt-4 text-center">
+  <%= link_to t("sessions.sign_in"), new_session_path, class: "text-sm link-primary" %>
+</p>

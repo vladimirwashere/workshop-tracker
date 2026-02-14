@@ -1,0 +1,12 @@
+<% content_for(:title) { t("worker_salaries.title") } %>
+
+<div class="max-w-2xl mx-auto">
+  <div class="mb-6">
+    <h1 class="page-title"><%= t("worker_salaries.title") %></h1>
+    <p class="text-sm text-slate-500 mt-1"><%= @worker.full_name %></p>
+  </div>
+
+  <div class="glass-card p-6">
+    <%= render "form", worker_salary: @worker_salary %>
+  </div>
+</div>

@@ -1,0 +1,135 @@
+<% content_for(:title, t("nav.gantt")) %>
+<%
+  period_days = current_user_settings&.last_gantt_zoom
+  valid_periods = GanttController::PERIOD_DAYS
+  if period_days.nil? || !valid_periods.include?(period_days.to_i)
+    period_days = 90
+  else
+    period_days = period_days.to_i
+  end
+  period_index = valid_periods.index(period_days) || 3
+  period_labels = [
+    t("gantt.period_1_week"),
+    t("gantt.period_2_weeks"),
+    t("gantt.period_1_month"),
+    t("gantt.period_3_months"),
+    t("gantt.period_6_months"),
+    t("gantt.period_1_year")
+  ]
+%>
+<div class="space-y-4" data-controller="gantt"
+     data-action="click@window->gantt#closeProjectDropdown"
+     data-gantt-data-url-value="<%= gantt_data_path %>"
+     data-gantt-update-url-value="<%= gantt_update_task_path %>"
+     data-gantt-can-edit-value="<%= can_manage? %>"
+     data-gantt-period-value="<%= period_days %>"
+     data-gantt-all-projects-value="<%= t("gantt.all_projects") %>"
+     data-gantt-projects-selected-value="<%= t("gantt.projects_selected") %>"
+     data-gantt-period-labels-value="<%= period_labels.to_json %>">
+
+  <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+    <h1 class="page-title"><%= t("nav.gantt") %></h1>
+
+    <div class="flex flex-wrap items-center gap-3">
+      <div class="flex items-center gap-2">
+        <label for="gantt-period" class="text-sm text-slate-600 whitespace-nowrap"><%= t("gantt.period") %>:</label>
+        <div class="flex items-start gap-3 min-w-[280px]">
+          <div class="flex flex-col gap-1 flex-1">
+            <input type="range" id="gantt-period"
+                   data-gantt-target="periodSlider"
+                   data-action="input->gantt#periodSliderChanged"
+                   min="0" max="5" step="1"
+                   value="<%= period_index %>"
+                   class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer">
+            <div class="flex justify-between text-xs text-slate-400">
+              <span>1w</span><span>2w</span><span>1m</span><span>3m</span><span>6m</span><span>1y</span>
+            </div>
+          </div>
+          <span data-gantt-target="periodLabel" class="text-sm font-medium text-slate-700 min-w-[80px] text-right"><%= period_labels[period_index] %></span>
+        </div>
+      </div>
+
+      <span class="hidden sm:inline text-slate-300">|</span>
+
+      <div class="relative inline-block" data-gantt-target="projectDropdownWrapper">
+        <label class="text-sm text-slate-600 whitespace-nowrap"><%= t("gantt.filter_by_project") %>:</label>
+        <button type="button"
+                id="gantt-projects-trigger"
+                data-gantt-target="projectDropdownTrigger"
+                data-action="click->gantt#toggleProjectDropdown"
+                aria-expanded="false"
+                aria-haspopup="listbox"
+                class="ml-1 btn-secondary btn-sm min-w-[160px] justify-between">
+          <span data-gantt-target="projectDropdownSummary"><%= t("gantt.all_projects") %></span>
+          <svg class="h-4 w-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+          </svg>
+        </button>
+        <div data-gantt-target="projectDropdownPanel"
+             aria-hidden="true"
+             class="absolute left-0 top-full z-10 mt-1 hidden max-h-64 w-72 overflow-y-auto glass-card py-1 shadow-lg"
+             role="listbox">
+          <div class="flex gap-2 border-b border-slate-100 px-3 py-2">
+            <button type="button"
+                    data-action="click->gantt#selectAllProjects"
+                    class="text-xs link-primary underline">
+              <%= t("gantt.select_all") %>
+            </button>
+            <button type="button"
+                    data-action="click->gantt#clearProjects"
+                    class="text-xs link-primary underline">
+              <%= t("gantt.clear") %>
+            </button>
+          </div>
+          <div class="py-1">
+            <% @projects.each do |project| %>
+              <label class="flex cursor-pointer items-center gap-2 px-3 py-1.5 text-sm hover:bg-slate-50/80 transition-colors">
+                <input type="checkbox"
+                       data-gantt-target="projectCheckbox"
+                       value="<%= project.id %>"
+                       data-action="change->gantt#projectChanged"
+                       class="h-4 w-4 rounded-lg border-slate-300 text-indigo-600 focus:ring-indigo-500">
+                <span><%= project.name %></span>
+              </label>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="flex flex-wrap gap-4 text-xs text-slate-500">
+    <span class="flex items-center gap-1">
+      <span class="w-3 h-3 rounded-sm inline-block" style="background:#818cf8"></span> <%= t("gantt.legend_project") %>
+    </span>
+    <span class="flex items-center gap-1">
+      <span class="w-3 h-3 rounded-sm inline-block" style="background:#a78bfa"></span> <%= t("gantt.legend_phase") %>
+    </span>
+    <span class="flex items-center gap-1">
+      <span class="w-3 h-3 rounded-sm inline-block" style="background:#9ca3af"></span> <%= t("tasks.statuses.planned") %>
+    </span>
+    <span class="flex items-center gap-1">
+      <span class="w-3 h-3 rounded-sm inline-block" style="background:#fbbf24"></span> <%= t("tasks.statuses.in_progress") %>
+    </span>
+    <span class="flex items-center gap-1">
+      <span class="w-3 h-3 rounded-sm inline-block" style="background:#34d399"></span> <%= t("tasks.statuses.done") %>
+    </span>
+    <span class="flex items-center gap-1">
+      <span class="w-3 h-3 rounded-sm inline-block" style="background:#f87171"></span> <%= t("tasks.statuses.cancelled") %>
+    </span>
+    <span class="flex items-center gap-1">
+      <span class="w-0.5 h-3 inline-block" style="background:#ef4444"></span> <%= t("gantt.today") %>
+    </span>
+  </div>
+
+  <div class="glass-card overflow-x-auto" data-gantt-target="chart">
+    <div class="flex items-center justify-center py-12">
+      <p class="text-slate-400 text-sm"><%= t("common.loading") %></p>
+    </div>
+  </div>
+
+  <div data-gantt-target="tooltip"
+       class="fixed z-50 bg-white/90 backdrop-blur-sm shadow-lg rounded-xl p-3 border border-slate-200/50 max-w-xs pointer-events-none"
+       style="display:none">
+  </div>
+</div>

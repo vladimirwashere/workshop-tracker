@@ -1,0 +1,79 @@
+<% content_for(:title, t("reports.activity_title")) %>
+
+<div class="space-y-4">
+  <div class="flex items-center justify-between">
+    <h1 class="page-title"><%= t("reports.activity_title") %></h1>
+  </div>
+
+  <%= form_with url: activity_reports_path, method: :get, class: "glass-card p-4 mb-6", data: {
+    controller: "report-filters",
+    report_filters_phases_for_project_url_value: phases_for_project_path("PROJECT_ID").sub("PROJECT_ID", ""),
+    report_filters_tasks_for_project_url_value: tasks_for_project_path("PROJECT_ID").sub("PROJECT_ID", ""),
+    report_filters_all_label_value: t("common.all")
+  } do |f| %>
+    <div class="flex flex-wrap items-end gap-4" data-controller="date-range">
+      <div>
+        <label class="label-premium"><%= t("reports.date_from") %></label>
+        <input type="date" name="from" value="<%= params[:from] || Date.current.beginning_of_month %>"
+               class="mt-1 input-premium"
+               data-date-range-target="startDate"
+               data-action="change->date-range#fillEnd">
+      </div>
+      <div>
+        <label class="label-premium"><%= t("reports.date_to") %></label>
+        <input type="date" name="to" value="<%= params[:to] || Date.current.end_of_month %>"
+               class="mt-1 input-premium"
+               data-date-range-target="endDate">
+      </div>
+      <div>
+        <% all_projects_selected = Array(@selected_project_ids).empty? %>
+        <label class="label-premium"><%= t("daily_logs.project") %></label>
+        <select name="project_ids[]" class="mt-1 <%= dropdown_all_selected_classes(all_projects_selected) %>" data-action="change->report-filters#projectChanged" data-report-filters-target="project">
+          <option value=""><%= t("common.all") %></option>
+          <% @projects.each do |p| %>
+            <option value="<%= p.id %>" <%= "selected" if Array(@selected_project_ids).include?(p.id) %>><%= p.name %></option>
+          <% end %>
+        </select>
+      </div>
+      <div>
+        <% all_phases_selected = Array(@selected_phase_ids).empty? %>
+        <label class="label-premium"><%= t("daily_logs.phase") %></label>
+        <select name="phase_ids[]" class="mt-1 <%= dropdown_all_selected_classes(all_phases_selected) %>" data-action="change->report-filters#phaseChanged" data-report-filters-target="phase">
+          <option value=""><%= t("common.all") %></option>
+          <% @phases.each do |phase| %>
+            <option value="<%= phase.id %>" data-project-id="<%= phase.project_id %>" <%= "selected" if Array(@selected_phase_ids).include?(phase.id) %>><%= phase.name %></option>
+          <% end %>
+        </select>
+      </div>
+      <div>
+        <% all_tasks_selected = Array(@selected_task_ids).empty? %>
+        <label class="label-premium"><%= t("daily_logs.task") %></label>
+        <select name="task_ids[]" class="mt-1 <%= dropdown_all_selected_classes(all_tasks_selected) %>" data-action="change->report-filters#taskChanged" data-report-filters-target="task">
+          <option value=""><%= t("common.all") %></option>
+          <% @tasks.each do |task| %>
+            <option value="<%= task.id %>" data-project-id="<%= task.project_id %>" <% if task.phase_id.present? %>data-phase-id="<%= task.phase_id %>"<% end %> <%= "selected" if Array(@selected_task_ids).include?(task.id) %>><%= task.name %></option>
+          <% end %>
+        </select>
+      </div>
+      <div>
+        <% all_workers_selected = Array(params[:worker_ids]).reject(&:blank?).empty? %>
+        <label class="label-premium"><%= t("daily_logs.worker") %></label>
+        <select name="worker_ids[]" class="mt-1 <%= dropdown_all_selected_classes(all_workers_selected) %>">
+          <option value=""><%= t("common.all") %></option>
+          <% @workers.each do |w| %>
+            <option value="<%= w.id %>" <%= "selected" if Array(params[:worker_ids]).include?(w.id.to_s) %>><%= w.full_name %></option>
+          <% end %>
+        </select>
+      </div>
+      <div>
+        <%= f.submit t("reports.generate"), class: "btn-primary" %>
+      </div>
+    </div>
+  <% end %>
+
+  <% if @data.present? && @data.any? %>
+    <%= render "reports/activity_results" %>
+  <% elsif @generator.present? %>
+    <div class="glass-card p-8 text-center text-slate-500"><%= t("reports.no_data") %></div>
+  <% end %>
+</div>

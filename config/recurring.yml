@@ -1,0 +1,19 @@
+production:
+  fetch_fx_rates:
+    class: FetchFXRatesJob
+    schedule: every day at 8:00 UTC
+    queue: default
+  cleanup_expired_sessions:
+    class: CleanupExpiredSessionsJob
+    schedule: every day at 3:00 UTC
+    queue: default
+
+development:
+  fetch_fx_rates:
+    class: FetchFXRatesJob
+    schedule: every day at 8:00 UTC
+    queue: default
+  cleanup_expired_sessions:
+    class: CleanupExpiredSessionsJob
+    schedule: every day at 3:00 UTC
+    queue: default

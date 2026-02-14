@@ -1,0 +1,63 @@
+<%= form_with(model: project, class: "space-y-6", data: { controller: "date-range" }) do |form| %>
+  <%= render "shared/form_errors", record: project %>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div>
+      <%= form.label :name, t("projects.name"), class: "label-premium" %>
+      <%= form.text_field :name,
+        class: "mt-1 input-premium",
+        required: true,
+        aria: { required: true, label: t("projects.name") } %>
+    </div>
+
+    <div>
+      <%= form.label :client_name, t("projects.client_name"), class: "label-premium" %>
+      <%= form.text_field :client_name,
+        class: "mt-1 input-premium",
+        aria: { label: t("projects.client_name") } %>
+    </div>
+
+    <div>
+      <%= form.label :status, t("projects.status"), class: "label-premium" %>
+      <%= form.select :status,
+        Project.statuses.keys.map { |s| [t("projects.statuses.#{s}"), s] },
+        {},
+        class: "mt-1 select-premium w-full",
+        aria: { label: t("projects.status") } %>
+    </div>
+
+    <div></div>
+
+    <div>
+      <%= form.label :planned_start_date, t("projects.start_date"), class: "label-premium" %>
+      <%= form.date_field :planned_start_date,
+        class: "mt-1 input-premium",
+        required: true,
+        data: { date_range_target: "startDate", action: "change->date-range#fillEnd" },
+        aria: { required: true, label: t("projects.start_date") } %>
+    </div>
+
+    <div>
+      <%= form.label :planned_end_date, t("projects.end_date"), class: "label-premium" %>
+      <%= form.date_field :planned_end_date,
+        class: "mt-1 input-premium",
+        required: true,
+        data: { date_range_target: "endDate" },
+        aria: { required: true, label: t("projects.end_date") } %>
+    </div>
+  </div>
+
+  <div>
+    <%= form.label :description, t("projects.description"), class: "label-premium" %>
+    <%= form.text_area :description,
+      rows: 4,
+      class: "mt-1 input-premium",
+      aria: { label: t("projects.description") } %>
+  </div>
+
+  <div class="flex items-center gap-3 pt-4">
+    <%= form.submit t("common.save"), class: "btn-primary" %>
+    <%= link_to t("common.cancel"), project.persisted? ? project_path(project) : projects_path,
+      class: "btn-secondary" %>
+  </div>
+<% end %>
