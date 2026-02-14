@@ -101,14 +101,14 @@ class DailyLogsController < ApplicationController
     @workers = policy_scope(Worker).active_workers.order(:full_name)
     @phases = if @daily_log&.project_id.present?
                 policy_scope(Phase).where(project_id: @daily_log.project_id).order(:name)
-              else
+    else
                 Phase.none
-              end
+    end
     @tasks = if @daily_log&.project_id.present?
                policy_scope(Task).where(project_id: @daily_log.project_id).order(:name)
-              else
+    else
                Task.none
-              end
+    end
     @phase_id_filter = @daily_log.task&.phase_id
   end
 
@@ -126,5 +126,4 @@ class DailyLogsController < ApplicationController
     session[:last_daily_log_worker_id] = @daily_log.worker_id
     session[:last_daily_log_phase_id] = @daily_log.task&.phase_id
   end
-
 end

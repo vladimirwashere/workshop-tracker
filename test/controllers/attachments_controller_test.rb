@@ -157,5 +157,4 @@ class AttachmentsControllerTest < ActionDispatch::IntegrationTest
 
     assert_equal "DailyLog", Attachment.last.related_type
   end
-
 end

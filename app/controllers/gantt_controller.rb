@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class GanttController < ApplicationController
-  PERIOD_DAYS = [7, 14, 30, 90, 180, 365].freeze
+  PERIOD_DAYS = [ 7, 14, 30, 90, 180, 365 ].freeze
 
   def show
     authorize :gantt, :show?
@@ -115,5 +115,4 @@ class GanttController < ApplicationController
       phase_id: task.phase_id
     }
   end
-
 end

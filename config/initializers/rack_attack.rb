@@ -34,6 +34,6 @@ class Rack::Attack
 
   # Custom throttled response
   self.throttled_responder = lambda do |_req|
-    [ 429, { "Content-Type" => "text/plain" }, ["Rate limit exceeded. Retry later.\n"] ]
+    [ 429, { "Content-Type" => "text/plain" }, [ "Rate limit exceeded. Retry later.\n" ] ]
   end
 end

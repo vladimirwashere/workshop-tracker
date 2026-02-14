@@ -18,7 +18,7 @@ class ReportsControllerTest < ActionDispatch::IntegrationTest
 
   # Access
   test "all roles can access financial reports" do
-    [@admin, @owner, @manager].each do |user|
+    [ @admin, @owner, @manager ].each do |user|
       sign_in user
       get financial_reports_path
       assert_response :success, "#{user.role} should access financial reports"
@@ -26,7 +26,7 @@ class ReportsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "all roles can access activity reports" do
-    [@admin, @owner, @manager].each do |user|
+    [ @admin, @owner, @manager ].each do |user|
       sign_in user
       get activity_reports_path
       assert_response :success, "#{user.role} should access activity reports"
@@ -50,7 +50,7 @@ class ReportsControllerTest < ActionDispatch::IntegrationTest
   test "labour by project when project filter present" do
     sign_in @admin
     get financial_reports_path(report_type: "labour", from: Date.current.beginning_of_month,
-                     to: Date.current.end_of_month, project_ids: [@project.id])
+                     to: Date.current.end_of_month, project_ids: [ @project.id ])
     assert_response :success
   end
 
@@ -101,7 +101,7 @@ class ReportsControllerTest < ActionDispatch::IntegrationTest
   test "financial reports filter by project" do
     sign_in @admin
     get financial_reports_path(report_type: "labour", from: Date.current.beginning_of_month,
-                     to: Date.current.end_of_month, project_ids: [@project.id])
+                     to: Date.current.end_of_month, project_ids: [ @project.id ])
     assert_response :success
   end
 
@@ -122,8 +122,8 @@ class ReportsControllerTest < ActionDispatch::IntegrationTest
 
     sign_in @admin
     get financial_reports_path(report_type: "combined", from: Date.current.beginning_of_month,
-                     to: Date.current.end_of_month, project_ids: [@project.id],
-                     phase_ids: [phase.id], task_ids: [phased_task.id])
+                     to: Date.current.end_of_month, project_ids: [ @project.id ],
+                     phase_ids: [ phase.id ], task_ids: [ phased_task.id ])
     assert_response :success
   end
 
@@ -131,7 +131,7 @@ class ReportsControllerTest < ActionDispatch::IntegrationTest
   test "activity report with filters" do
     sign_in @admin
     get activity_reports_path(from: Date.current.beginning_of_month, to: Date.current.end_of_month,
-                              worker_ids: [@worker.id], project_ids: [@project.id])
+                              worker_ids: [ @worker.id ], project_ids: [ @project.id ])
     assert_response :success
   end
 end

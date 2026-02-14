@@ -118,5 +118,4 @@ class MaterialEntriesController < ApplicationController
   def load_projects
     @projects = policy_scope(Project).order(:name)
   end
-
 end

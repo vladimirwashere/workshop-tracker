@@ -25,7 +25,7 @@ class ReportGenerator
 
       {
         project: project,
-        total_days: entries.map { |e| [e[:worker_id], e[:log_date]] }.uniq.count,
+        total_days: entries.map { |e| [ e[:worker_id], e[:log_date] ] }.uniq.count,
         total_cost_ron: entries.sum { |e| e[:cost_ron] }.to_f,
         workers: workers_grouped
       }
@@ -38,7 +38,7 @@ class ReportGenerator
     cost_map.group_by { |entry| entry[:project] }.reject { |k, _| k.nil? }.map do |project, entries|
       {
         project: project,
-        total_days: entries.map { |e| [e[:worker_id], e[:log_date]] }.uniq.count,
+        total_days: entries.map { |e| [ e[:worker_id], e[:log_date] ] }.uniq.count,
         total_cost_ron: entries.sum { |e| e[:cost_ron] }.to_f
       }
     end
@@ -114,7 +114,7 @@ class ReportGenerator
           {
             project: project,
             entries: project_logs
-              .sort_by { |l| [l.worker.full_name, l.task.name] }
+              .sort_by { |l| [ l.worker.full_name, l.task.name ] }
               .map do |log|
               {
                 worker: log.worker,
@@ -135,7 +135,7 @@ class ReportGenerator
   def labour_detail
     logs = base_daily_logs(:project, { task: :phase }, { worker: :worker_salaries })
 
-    rows = logs.group_by { |l| [l.worker_id, l.log_date] }.flat_map do |(worker_id, log_date), day_logs|
+    rows = logs.group_by { |l| [ l.worker_id, l.log_date ] }.flat_map do |(worker_id, log_date), day_logs|
       worker = day_logs.first.worker
       daily_rate = worker.daily_rate_cached(log_date) || 0
       share = day_logs.size > 0 ? daily_rate.to_f / day_logs.size : 0
@@ -155,7 +155,7 @@ class ReportGenerator
       end
     end
 
-    rows.sort_by { |r| [r[:log_date], r[:project_name], r[:worker_name]] }
+    rows.sort_by { |r| [ r[:log_date], r[:project_name], r[:worker_name] ] }
   end
 
   def materials_detail
@@ -197,7 +197,7 @@ class ReportGenerator
   def daily_rate_cost_allocation
     logs = base_daily_logs(:project, { worker: :worker_salaries })
 
-    logs.group_by { |l| [l.worker_id, l.log_date] }.flat_map do |(worker_id, log_date), day_logs|
+    logs.group_by { |l| [ l.worker_id, l.log_date ] }.flat_map do |(worker_id, log_date), day_logs|
       worker = day_logs.first.worker
       daily_rate = worker.daily_rate_cached(log_date) || 0
       share = day_logs.size > 0 ? daily_rate.to_f / day_logs.size : 0
@@ -244,5 +244,4 @@ class ReportGenerator
     scope = scope.where(id: task_ids) if task_ids.any?
     scope.select(:id)
   end
-
 end

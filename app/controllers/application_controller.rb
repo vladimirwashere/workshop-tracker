@@ -60,7 +60,7 @@ class ApplicationController < ActionController::Base
   def paginate_or_load_all(scope)
     count = scope.limit(PAGINATION_THRESHOLD + 1).count
     if count <= PAGINATION_THRESHOLD
-      [nil, scope.to_a]
+      [ nil, scope.to_a ]
     else
       pagy(scope, items: PAGINATION_THRESHOLD)
     end

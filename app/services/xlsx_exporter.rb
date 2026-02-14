@@ -5,7 +5,7 @@ require "caxlsx"
 class XlsxExporter
   class << self
     def labour_by_project(data, detail: [], currency: "RON")
-      summary_columns = ["Project", "Worker", "Days", "Cost_#{currency}"]
+      summary_columns = [ "Project", "Worker", "Days", "Cost_#{currency}" ]
       summary_rows = []
 
       data.each do |row|
@@ -21,14 +21,14 @@ class XlsxExporter
         end
       end
 
-      sheets = [{ name: "Summary", columns: summary_columns, rows: summary_rows, sum_columns: [3] }]
+      sheets = [ { name: "Summary", columns: summary_columns, rows: summary_rows, sum_columns: [ 3 ] } ]
       sheets << labour_detail_sheet(detail, currency: currency) if detail.any?
 
       build_workbook(sheets: sheets, currency: currency)
     end
 
     def labour_summary(data, detail: [], currency: "RON")
-      summary_columns = ["Project", "Total_Days", "Total_Cost_#{currency}"]
+      summary_columns = [ "Project", "Total_Days", "Total_Cost_#{currency}" ]
       summary_rows = data.map do |row|
         [
           row[:project]&.name || "Unknown",
@@ -37,7 +37,7 @@ class XlsxExporter
         ]
       end
 
-      sheets = [{ name: "Summary", columns: summary_columns, rows: summary_rows, sum_columns: [1, 2] }]
+      sheets = [ { name: "Summary", columns: summary_columns, rows: summary_rows, sum_columns: [ 1, 2 ] } ]
       sheets << labour_detail_sheet(detail, currency: currency) if detail.any?
 
       build_workbook(sheets: sheets, currency: currency)
@@ -92,8 +92,8 @@ class XlsxExporter
       end
 
       sheets = [
-        { name: "Summary", columns: summary_columns, rows: summary_rows, sum_columns: [1, 2, 3] },
-        { name: "Materials Detail", columns: detail_columns, rows: detail_rows, sum_columns: [5, 7, 8, 10, 11] }
+        { name: "Summary", columns: summary_columns, rows: summary_rows, sum_columns: [ 1, 2, 3 ] },
+        { name: "Materials Detail", columns: detail_columns, rows: detail_rows, sum_columns: [ 5, 7, 8, 10, 11 ] }
       ]
 
       build_workbook(sheets: sheets, currency: currency)
@@ -120,7 +120,7 @@ class XlsxExporter
         ]
       end
 
-      sheets = [{ name: "Summary", columns: summary_columns, rows: summary_rows, sum_columns: [1, 2, 3, 4, 5] }]
+      sheets = [ { name: "Summary", columns: summary_columns, rows: summary_rows, sum_columns: [ 1, 2, 3, 4, 5 ] } ]
       sheets << labour_detail_sheet(labour_detail, currency: currency) if labour_detail.any?
       sheets << materials_detail_sheet(materials_detail, currency: currency) if materials_detail.any?
 
@@ -149,7 +149,7 @@ class XlsxExporter
         ]
       end
 
-      { name: "Labour Detail", columns: columns, rows: rows, sum_columns: [5, 8] }
+      { name: "Labour Detail", columns: columns, rows: rows, sum_columns: [ 5, 8 ] }
     end
 
     def materials_detail_sheet(entries_data, currency:)
@@ -177,7 +177,7 @@ class XlsxExporter
         ]
       end
 
-      { name: "Materials Detail", columns: columns, rows: rows, sum_columns: [5, 7, 8, 10, 11] }
+      { name: "Materials Detail", columns: columns, rows: rows, sum_columns: [ 5, 7, 8, 10, 11 ] }
     end
 
     def build_workbook(sheets:, currency:)

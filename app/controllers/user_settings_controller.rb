@@ -25,8 +25,7 @@ class UserSettingsController < ApplicationController
   def user_settings_params
     params.require(:user_setting).permit(
       :default_currency_display, :last_gantt_zoom,
-      last_dashboard_filters: [:from, :to, project_ids: []]
+      last_dashboard_filters: [ :from, :to, project_ids: [] ]
     )
   end
-
 end

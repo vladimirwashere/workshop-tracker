@@ -18,7 +18,7 @@ class MaterialEntry < ApplicationRecord
   validates :unit_cost_inc_vat_ron, numericality: { greater_than_or_equal_to: 0 }, allow_nil: true
   validate :at_least_one_unit_cost
 
-  VAT_RATES = [0, 0.21].map { |r| BigDecimal(r.to_s) }.freeze
+  VAT_RATES = [ 0, 0.21 ].map { |r| BigDecimal(r.to_s) }.freeze
   DEFAULT_VAT_RATE = VAT_RATES.last # 0.21
 
   validates :vat_rate, presence: true, inclusion: { in: VAT_RATES }

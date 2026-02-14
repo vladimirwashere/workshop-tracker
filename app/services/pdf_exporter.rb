@@ -15,7 +15,7 @@ class PdfExporter
         pdf.text(row[:project]&.name || "Unknown", size: 11, style: :bold)
         pdf.move_down 4
 
-        table_data = [["Worker", "Days", "Cost (#{currency})"]]
+        table_data = [ [ "Worker", "Days", "Cost (#{currency})" ] ]
         (row[:workers] || []).each do |w|
           table_data << [
             w[:worker]&.full_name || "Unknown",
@@ -33,7 +33,7 @@ class PdfExporter
 
   def self.labour_summary(data, date_range:, currency: "RON")
     generate_pdf("Labour Summary", date_range) do |pdf|
-      table_data = [["Project", "Days", "Cost (#{currency})"]]
+      table_data = [ [ "Project", "Days", "Cost (#{currency})" ] ]
       data.each do |row|
         table_data << [
           row[:project]&.name || "Unknown",
@@ -52,7 +52,7 @@ class PdfExporter
         pdf.text(row[:project]&.name || "Unknown", size: 11, style: :bold)
         pdf.move_down 4
 
-        table_data = [["Description", "Qty", "Unit", "Ex VAT (#{currency})", "VAT (#{currency})", "Inc VAT (#{currency})"]]
+        table_data = [ [ "Description", "Qty", "Unit", "Ex VAT (#{currency})", "VAT (#{currency})", "Inc VAT (#{currency})" ] ]
         (row[:entries] || []).each do |e|
           table_data << [
             e.description, e.quantity.to_s, e.unit,
@@ -76,14 +76,14 @@ class PdfExporter
 
   def self.combined_cost(data, date_range:, currency: "RON")
     generate_pdf("Combined Cost", date_range) do |pdf|
-      table_data = [[
+      table_data = [ [
         "Project",
         "Labour (#{currency})",
         "Materials Ex VAT (#{currency})",
         "Materials VAT (#{currency})",
         "Materials Inc VAT (#{currency})",
         "Total (#{currency})"
-      ]]
+      ] ]
       data.each do |row|
         table_data << [
           row[:project]&.name || "Unknown",

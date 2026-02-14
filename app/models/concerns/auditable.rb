@@ -24,7 +24,7 @@ module Auditable
   end
 
   def log_discard
-    write_audit_log("discard", { discarded_at: [nil, discarded_at&.iso8601] })
+    write_audit_log("discard", { discarded_at: [ nil, discarded_at&.iso8601 ] })
   end
 
   def write_audit_log(action, changes_data)

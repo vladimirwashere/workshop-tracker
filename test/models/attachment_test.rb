@@ -111,6 +111,4 @@ class AttachmentTest < ActiveSupport::TestCase
     attachment = create(:attachment, related: material_entry)
     assert_equal "MaterialEntry", attachment.related_type
   end
-
-
 end

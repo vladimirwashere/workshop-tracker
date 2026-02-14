@@ -6,8 +6,8 @@ module CreatesAttachmentsFromParams
   # Returns [created_count, errors_array]
   def create_attachments_for(related)
     files = Array(params[:files])
-    return [0, []] if files.empty?
-    return [0, []] unless policy(Attachment).create?
+    return [ 0, [] ] if files.empty?
+    return [ 0, [] ] unless policy(Attachment).create?
 
     created = []
     errors = []
@@ -26,7 +26,7 @@ module CreatesAttachmentsFromParams
       end
     end
 
-    [created.size, errors]
+    [ created.size, errors ]
   end
 
   # Builds the combined notice and sets flash[:alert] for attachment errors
