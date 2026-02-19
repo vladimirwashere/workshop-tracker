@@ -1,6 +1,5 @@
-# BAH Workshop Tracker
-
-Workshop project planning, daily work logging, cost tracking, and reporting application for BAH Projects Ltd. Manages furniture production operations in Romania with dual-currency support (RON/GBP).
+# Workshop Tracker
+Workshop project planning, daily work logging, cost tracking, and reporting application. Manages production operations in Romania for a UK construction company, with dual-currency support (RON/GBP). Logo (logo.png, icon.png) and company name placeholders for legal purposes.
 
 ## Stack
 
@@ -68,6 +67,23 @@ Role-based access control via Pundit:
 | `CleanupExpiredSessionsJob` | Daily 3:00 UTC | Remove expired sessions |
 
 Processed via Solid Queue (`config/recurring.yml`).
+
+## Root Directory Structure
+
+workshop-tracker/
+├── .github/             # GitHub Actions CI/CD workflows
+├── .kamal/              # Kamal deployment configuration
+├── app/                 # Main application code
+├── bin/                 # Executable scripts
+├── config/              # Application configuration
+├── db/                  # Database schema and migrations
+├── lib/                 # Custom libraries and extensions
+├── log/                 # Application logs
+├── public/              # Static assets
+├── script/              # Utility scripts
+├── test/                # Test suite (Minitest + FactoryBot)
+├── vendor/              # Data visualization library
+└── [Configuration Files]
 
 ## Quick Start
 
@@ -250,8 +266,7 @@ Deployable to any Docker-capable PaaS (Render, Fly.io, Railway) or self-hosted w
 | `admin_instructions.md` | Setup, configuration, and operations guide |
 | `DATABASE_SCHEMA.md` | Database schema reference |
 | `SECURITY.md` | Security policy and vulnerability reporting |
-| `CLAUDE.md` | AI assistant context and conventions |
 
 ## License
 
-Internal use only.
+Licensed under the MIT License.

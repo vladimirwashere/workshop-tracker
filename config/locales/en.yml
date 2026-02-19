@@ -50,7 +50,7 @@ en:
         start_date_before_project: "cannot be before the project start date (%{date})"
         end_date_after_project: "cannot be after the project end date (%{date})"
   common:
-    app_name: BAH Workshop
+    app_name: Workshop Tracker
     all: All
     total: Total
     grand_total: Grand Total

@@ -20,6 +20,7 @@
 Thumbs.db
 
 # IDE and editor directories
+/.github/copilot-instructions.md
 /.cursor/
 .cursorrules
 claude.md
