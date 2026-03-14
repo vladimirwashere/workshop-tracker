@@ -5,13 +5,7 @@ class UsersController < ApplicationController
 
   def index
     authorize User
-    scope = policy_scope(User).includes(:user_setting).kept
-    if params[:search].present?
-      q = "%#{User.sanitize_sql_like(params[:search])}%"
-      scope = scope.where("display_name ILIKE :q", q: q)
-    end
-    scope = scope.order(created_at: :desc)
-    @pagy, @users = paginate_or_load_all(scope)
+    load_users
   end
 
   def show
@@ -82,14 +76,26 @@ class UsersController < ApplicationController
     temp_password = "#{SecureRandom.alphanumeric(8).downcase}A1#{SecureRandom.alphanumeric(2)}"
     if @user.update(password: temp_password, password_confirmation: temp_password)
       @user.sessions.destroy_all
-      flash[:temp_password] = temp_password
-      redirect_to users_path, notice: t("users.password_reset")
+      @temp_password = temp_password
+      flash.now[:notice] = t("users.password_reset")
+      load_users
+      render :index
     else
       redirect_to users_path, alert: @user.errors.full_messages.join(", ")
     end
   end
 
   private
+
+  def load_users
+    scope = policy_scope(User).includes(:user_setting).kept
+    if params[:search].present?
+      q = "%#{User.sanitize_sql_like(params[:search])}%"
+      scope = scope.where("display_name ILIKE :q", q: q)
+    end
+    scope = scope.order(created_at: :desc)
+    @pagy, @users = paginate_or_load_all(scope)
+  end
 
   def set_user
     @user = User.kept.find(params[:id])

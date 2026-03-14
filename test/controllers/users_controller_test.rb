@@ -99,6 +99,7 @@ class UsersControllerTest < ActionDispatch::IntegrationTest
   test "admin can reset password" do
     sign_in @admin
     post reset_password_user_url(@other_user)
-    assert_redirected_to users_path
+    assert_response :success
+    assert_includes @response.body, I18n.t("users.password_reset")
   end
 end
