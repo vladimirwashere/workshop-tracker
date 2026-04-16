@@ -62,8 +62,20 @@ class ApplicationController < ActionController::Base
     if count <= PAGINATION_THRESHOLD
       [ nil, scope.to_a ]
     else
-      pagy(scope, items: PAGINATION_THRESHOLD)
+      pagy(scope, **pagy_options)
     end
+  end
+
+  def pagy_options
+    if pagy_major_version >= 43
+      { limit: PAGINATION_THRESHOLD }
+    else
+      { items: PAGINATION_THRESHOLD }
+    end
+  end
+
+  def pagy_major_version
+    Gem.loaded_specs.fetch("pagy").version.segments.first
   end
 
   def parse_date(value)

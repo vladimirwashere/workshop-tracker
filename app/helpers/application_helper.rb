@@ -3,6 +3,14 @@
 module ApplicationHelper
   include Pagy::Frontend
 
+  def pagination_nav(pagy)
+    if pagy.respond_to?(:series_nav)
+      pagy.series_nav
+    else
+      pagy_nav(pagy)
+    end
+  end
+
   # Formatting
 
   def format_date(date)
