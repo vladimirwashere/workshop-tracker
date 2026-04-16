@@ -1,13 +1,15 @@
 # frozen_string_literal: true
 
 module ApplicationHelper
-  include Pagy::Frontend
+  include Pagy::Frontend if defined?(Pagy::Frontend)
 
   def pagination_nav(pagy)
     if pagy.respond_to?(:series_nav)
       pagy.series_nav
-    else
+    elsif respond_to?(:pagy_nav)
       pagy_nav(pagy)
+    else
+      ""
     end
   end
 

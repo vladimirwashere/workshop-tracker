@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "pagy"
+
 pagy_config = defined?(Pagy::OPTIONS) ? Pagy::OPTIONS : Pagy::DEFAULT
 
 # Pagy >= 43 freezes DEFAULT and uses OPTIONS for config.

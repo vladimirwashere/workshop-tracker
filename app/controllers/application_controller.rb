@@ -3,7 +3,12 @@
 class ApplicationController < ActionController::Base
   include Authentication
   include Pundit::Authorization
-  include Pagy::Backend
+
+  if defined?(Pagy::Backend)
+    include Pagy::Backend
+  elsif defined?(Pagy::Method)
+    include Pagy::Method
+  end
 
   # When a list has more than this many rows, use pagination (this many per page).
   PAGINATION_THRESHOLD = 50
@@ -67,15 +72,21 @@ class ApplicationController < ActionController::Base
   end
 
   def pagy_options
-    if pagy_major_version >= 43
+    if pagy_supports_limit_option?
       { limit: PAGINATION_THRESHOLD }
     else
       { items: PAGINATION_THRESHOLD }
     end
   end
 
-  def pagy_major_version
-    Gem.loaded_specs.fetch("pagy").version.segments.first
+  def pagy_supports_limit_option?
+    if defined?(Pagy::OPTIONS)
+      Pagy::OPTIONS.key?(:limit)
+    elsif defined?(Pagy::DEFAULT)
+      Pagy::DEFAULT.key?(:limit)
+    else
+      false
+    end
   end
 
   def parse_date(value)
