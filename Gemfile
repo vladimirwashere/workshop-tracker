@@ -22,7 +22,7 @@ gem "honeybadger", "~> 6.6"
 gem "rack-attack", "~> 6.7"
 
 gem "pundit", "~> 2.4"
-gem "discard", "~> 1.4"
+gem "discard", "~> 2.0"
 gem "pagy", "~> 43.5"
 gem "prawn", "~> 2.5"
 gem "prawn-table", "~> 0.2"
