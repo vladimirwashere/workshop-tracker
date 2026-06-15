@@ -26,7 +26,7 @@ gem "discard", "~> 2.0"
 gem "pagy", "~> 43.5"
 gem "prawn", "~> 2.5"
 gem "prawn-table", "~> 0.2"
-gem "caxlsx", "~> 4.4"
+gem "caxlsx", "~> 4.5"
 
 group :development, :test do
   gem "debug", platforms: %i[mri windows], require: "debug/prelude"
