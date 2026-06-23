@@ -18,7 +18,7 @@ gem "bootsnap", require: false
 gem "kamal", require: false
 gem "thruster", require: false
 gem "image_processing", "~> 2.0"
-gem "honeybadger", "~> 6.6"
+gem "honeybadger", "~> 6.9"
 gem "rack-attack", "~> 6.7"
 
 gem "pundit", "~> 2.4"
