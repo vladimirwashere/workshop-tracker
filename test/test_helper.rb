@@ -4,9 +4,9 @@ ENV["RAILS_ENV"] ||= "test"
 
 require "simplecov"
 SimpleCov.start "rails" do
-  add_filter "/test/"
-  add_filter "/config/"
-  add_filter "/vendor/"
+  skip "/test/"
+  skip "/config/"
+  skip "/vendor/"
   minimum_coverage 0
 end
 
