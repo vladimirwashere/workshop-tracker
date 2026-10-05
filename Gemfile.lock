@@ -140,7 +140,7 @@ GEM
     globalid (1.4.0)
       activesupport (>= 6.1)
     hashdiff (1.2.1)
-    honeybadger (6.9.2)
+    honeybadger (6.9.3)
       logger
       ostruct
     htmlentities (4.4.2)
