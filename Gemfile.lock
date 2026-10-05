@@ -146,7 +146,7 @@ GEM
     htmlentities (4.4.2)
     i18n (1.15.2)
       concurrent-ruby (~> 1.0)
-    image_processing (2.1.0)
+    image_processing (2.2.0)
     importmap-rails (2.2.3)
       actionpack (>= 6.0.0)
       activesupport (>= 6.0.0)
@@ -440,7 +440,7 @@ DEPENDENCIES
   factory_bot_rails (~> 6.4)
   faker (~> 3.8)
   honeybadger (~> 6.9)
-  image_processing (~> 2.1)
+  image_processing (~> 2.2)
   importmap-rails
   kamal
   letter_opener
