@@ -17,7 +17,7 @@ gem "solid_queue"
 gem "bootsnap", require: false
 gem "kamal", require: false
 gem "thruster", require: false
-gem "image_processing", "~> 2.0"
+gem "image_processing", "~> 2.1"
 gem "ruby-vips", "~> 2.0"
 gem "honeybadger", "~> 6.9"
 gem "rack-attack", "~> 6.7"
