@@ -140,7 +140,7 @@ GEM
     globalid (1.4.0)
       activesupport (>= 6.1)
     hashdiff (1.2.1)
-    honeybadger (6.9.3)
+    honeybadger (6.10.0)
       logger
       ostruct
     htmlentities (4.4.2)
@@ -439,7 +439,7 @@ DEPENDENCIES
   discard (~> 2.0)
   factory_bot_rails (~> 6.4)
   faker (~> 3.8)
-  honeybadger (~> 6.9)
+  honeybadger (~> 6.10)
   image_processing (~> 2.2)
   importmap-rails
   kamal
