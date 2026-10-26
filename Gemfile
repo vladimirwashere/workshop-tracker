@@ -24,7 +24,7 @@ gem "rack-attack", "~> 6.7"
 
 gem "pundit", "~> 2.4"
 gem "discard", "~> 2.0"
-gem "pagy", "~> 43.6"
+gem "pagy", "~> 43.8"
 gem "prawn", "~> 2.5"
 gem "prawn-table", "~> 0.2"
 gem "caxlsx", "~> 4.5"
