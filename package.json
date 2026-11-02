@@ -1,6 +1,6 @@
 {
   "dependencies": {
-    "puppeteer": "^24.37.2"
+    "puppeteer": "^25.16.0"
   },
   "overrides": {
     "yauzl": "^3.2.1"
